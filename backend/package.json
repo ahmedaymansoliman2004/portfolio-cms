@@ -1,0 +1,1 @@
+{"name":"portfolio-cms-backend","version":"1.0.0","type":"module","scripts":{"dev":"node --watch server.js","start":"node server.js"},"dependencies":{"cors":"^2.8.5","dotenv":"^17.4.2","express":"^4.18.3","mongodb":"^7.2.0","mongoose":"^9.5.0"}}

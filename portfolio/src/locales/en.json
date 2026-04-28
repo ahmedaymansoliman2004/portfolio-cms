@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "experience": "Experience",
+    "certificates": "Certificates",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "hire": "Hire Me"
+  },
+  "hero": {
+    "available": "Available for opportunities",
+    "role": "AI Engineer · Data Engineer · MIS Student",
+    "description": "Building intelligent systems and data pipelines — from raw data to production ML models. Based in Giza, Egypt.",
+    "viewProjects": "View Projects",
+    "contactMe": "Contact Me",
+    "gpa": "GPA",
+    "projects": "Projects"
+  },
+  "about": {
+    "label": "Who I Am",
+    "title": "About Me",
+    "subtitle": "A passionate AI & Data Engineering student turning raw data into production-ready ML systems.",
+    "summaryTitle": "Professional Summary",
+    "bio1": "I'm <accent>Ahmed Ayman Soliman</accent>, an AI Engineer and Data Engineering student at MSA University (MIS), Giza, Egypt — currently maintaining a <accent>3.63 GPA</accent>.",
+    "bio2": "I specialize in building end-to-end intelligent systems: from cleaning messy raw datasets to deploying computer vision models in production. I've worked on real-world projects across machine learning, computer vision, data analytics, and ETL pipeline development.",
+    "bio3": "With hands-on internship experience at Encryptcore and Elevvo Pathways, and active training under Egypt's Digital Pioneers Initiative (DEPI), I bring both academic rigor and practical engineering depth to every project I take on.",
+    "bio4": "Currently open to internships and freelance opportunities where I can apply my skills in AI and data engineering to real business problems.",
+    "stats": {
+      "projects": "Projects",
+      "gpa": "GPA / 4.0",
+      "internships": "Internships"
+    },
+    "skills": {
+      "ml": "Machine Learning",
+      "dataEng": "Data Engineering",
+      "analytics": "Analytics & BI",
+      "dev": "Dev & Tools"
+    }
+  },
+  "projects": {
+    "label": "What I've Built",
+    "title": "Projects",
+    "viewCode": "Code",
+    "viewDemo": "Demo",
+    "viewMore": "View Details"
+  },
+  "experience": {
+    "label": "Career Path",
+    "title": "Experience & Education"
+  },
+  "certificates": {
+    "label": "Credentials",
+    "title": "Certificates"
+  },
+  "testimonials": {
+    "label": "Social Proof",
+    "title": "Client Testimonials",
+    "subtitle": "Real reviews from real clients on freelance platforms.",
+    "viewRating": "View Rating",
+    "stars": "stars",
+    "recommendationLabel": "Academic Endorsement",
+    "recommendationTitle": "Academic Recommendation",
+    "recommendationSubtitle": "From Dr. Amal Mahmoud, Assistant Professor at MSA University"
+  },
+  "contact": {
+    "label": "Get In Touch",
+    "title": "Contact Me",
+    "subtitle": "Open to AI/Data roles, freelance projects, and collaborations. Let's build something great.",
+    "location": "Location",
+    "locationValue": "Giza, Egypt",
+    "phone": "Phone",
+    "socialLinks": "Social Links",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "messagePlaceholder": "Tell me about your project or opportunity...",
+    "send": "Send Message",
+    "sent": "✓ Email client opened — message is ready to send!"
+  },
+  "footer": {
+    "role": "AI Engineer · Data Engineer · MIS Student",
+    "rights": "All rights reserved.",
+    "builtWith": "Built with"
+  }
+}
