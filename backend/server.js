@@ -47,7 +47,7 @@ app.put('/api/content', async (req, res) => {
   await Content.findOneAndUpdate(
     { type: 'portfolio' },
     { type: 'portfolio', data: { ...data, updatedAt } },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
 
   res.json({ success: true, updatedAt });

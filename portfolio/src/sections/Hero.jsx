@@ -2,12 +2,17 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Github, Linkedin, Mail, ExternalLink } from 'lucide-react';
 import profileImg from '../assets/profile.jpg';
 import { useLang } from '../context/LangContext';
+import { useCms, siteText } from '../context/CmsContext';
 
 const skillsLabel = { ar: 'المهارات', en: 'SKILLS' };
 const SKILLS = ['Python', 'TensorFlow', 'YOLOv8', 'SQL', 'Power BI', 'Scikit-learn', 'OpenCV', 'Flask'];
 
 export default function Hero() {
   const { t, lang } = useLang();
+  const { data: cmsData } = useCms();
+  const heroSubtitle = siteText(cmsData, 'hero', 'subtitle', lang, t.hero.role);
+  const heroDescription = siteText(cmsData, 'hero', 'description', lang, t.hero.description);
+  const heroImage = cmsData?.about?.profileImage || profileImg;
 
   const nameDisplay = lang === 'ar'
     ? { line1: 'أحمد', line2: 'أيمن', line3: 'سليمان' }
@@ -98,7 +103,7 @@ export default function Hero() {
               transition={{ delay: 0.35, duration: 0.6 }}
               className="text-sm text-accent mb-5 font-mono ltr:tracking-widest ltr:uppercase"
             >
-              {t.hero.role}
+              {heroSubtitle}
             </motion.p>
 
             {/* Description */}
@@ -108,7 +113,7 @@ export default function Hero() {
               transition={{ delay: 0.44, duration: 0.6 }}
               className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed max-w-lg mb-9 text-start"
             >
-              {t.hero.description}
+              {heroDescription}
             </motion.p>
 
             {/* CTA buttons */}
@@ -168,7 +173,7 @@ export default function Hero() {
             {/* Photo frame */}
             <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-2xl overflow-hidden border-2 border-accent/30 glow">
               <img
-                src={profileImg}
+                src={heroImage}
                 alt="Ahmed Ayman Soliman"
                 className="w-full h-full object-cover object-top"
               />

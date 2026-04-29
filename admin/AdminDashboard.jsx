@@ -58,6 +58,10 @@ const I = {
   info:       ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M12 8v4","M12 16h.01"],
   upload:     ["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M17 8l-5-5-5 5","M12 3v12"],
   image:      ["M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"],
+  arrowUp:    ["M12 19V5","M5 12l7-7 7 7"],
+  arrowDown:  ["M12 5v14","M19 12l-7 7-7-7"],
+  settings:   ["M12 15.5A3.5 3.5 0 1012 8a3.5 3.5 0 000 7.5z","M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.31.48.6 1.51.6H21a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"],
+  text:       ["M4 7h16","M4 12h16","M4 17h10"],
   xCircle:    ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M15 9l-6 6","M9 9l6 6"],
 };
 
@@ -394,40 +398,6 @@ const nid = () => ++_id;
 // ═══════════════════════════════════════════════════════════════
 //  REAL DATA — All bilingual (ar + en)
 // ═══════════════════════════════════════════════════════════════
-const CMS_STORAGE_KEY = "ahmed_cms_data_v2";
-const DEFAULT_PROJECT_IMAGES = {
-  1: ["https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80", "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"],
-  2: ["https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80", "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80"],
-  3: ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80"],
-  4: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80", "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80"],
-  5: ["https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80", "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80"],
-  6: ["https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80", "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80"],
-  7: ["https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"],
-  8: ["https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&q=80", "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80"],
-  9: ["https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&q=80", "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80"],
-};
-const normalizeProjectImages = (project) => {
-  const existing = Array.isArray(project.images) ? project.images : [];
-  const legacy = [project.image, project.imageUrl, project.thumbnail, project.cover, project.coverImage].filter(Boolean);
-  const images = [...existing, ...legacy].filter(Boolean);
-  return { ...project, images: images.length ? images : (DEFAULT_PROJECT_IMAGES[project.id] || []) };
-};
-const normalizeCmsData = (data) => ({
-  ...INITIAL,
-  ...(data || {}),
-  about: { ...INITIAL.about, ...(data?.about || {}) },
-  projects: (data?.projects || INITIAL.projects).map(normalizeProjectImages),
-});
-const loadCmsData = () => {
-  if (typeof window === "undefined") return normalizeCmsData(INITIAL);
-  try {
-    const raw = localStorage.getItem(CMS_STORAGE_KEY);
-    return normalizeCmsData(raw ? JSON.parse(raw) : INITIAL);
-  } catch {
-    return normalizeCmsData(INITIAL);
-  }
-};
-
 const INITIAL = {
   about: {
     name_en: "Ahmed Ayman Soliman",
@@ -444,6 +414,24 @@ const INITIAL = {
     bio4_ar: "أبحث حالياً عن فرص التدريب والعمل الحر في الذكاء الاصطناعي وهندسة البيانات.",
     stats: { projects: "9+", gpa: "3.63", internships: "2+" },
   },
+  siteText: {
+    hero: {
+      subtitle_en: "AI Engineer · Data Engineer · MIS Student",
+      subtitle_ar: "مهندس ذكاء اصطناعي · مهندس بيانات · طالب نظم معلومات إدارية",
+      description_en: "I build intelligent systems that combine machine learning, data engineering, and clean user experiences.",
+      description_ar: "أبني أنظمة ذكية تجمع بين تعلم الآلة، هندسة البيانات، وتجربة استخدام واضحة واحترافية."
+    },
+    sections: {
+      about: { title_en: "About", title_ar: "نبذة عني", subtitle_en: "A quick summary of my background, skills, and practical experience.", subtitle_ar: "ملخص سريع عن خلفيتي ومهاراتي وخبرتي العملية." },
+      skills: { title_en: "Skills", title_ar: "المهارات", subtitle_en: "The main tools and technologies I use across AI, data, and development.", subtitle_ar: "أهم الأدوات والتقنيات التي أستخدمها في الذكاء الاصطناعي والبيانات والتطوير." },
+      projects: { title_en: "Projects", title_ar: "المشاريع", subtitle_en: "End-to-end ML systems, computer vision applications, and data engineering pipelines.", subtitle_ar: "أنظمة ML متكاملة، تطبيقات رؤية الحاسوب، وخطوط أنابيب هندسة البيانات." },
+      experience: { title_en: "Experience", title_ar: "الخبرات", subtitle_en: "Internships, freelance work, and hands-on technical experience.", subtitle_ar: "تدريبات، أعمال حرة، وخبرة تقنية عملية." },
+      certificates: { title_en: "Certifications", title_ar: "الشهادات", subtitle_en: "Selected certificates and learning achievements.", subtitle_ar: "مجموعة مختارة من الشهادات والإنجازات التعليمية." },
+      reviews: { title_en: "Reviews", title_ar: "آراء العملاء", subtitle_en: "Client feedback and recommendations from real work.", subtitle_ar: "آراء العملاء والتوصيات من أعمال حقيقية." },
+      recommendations: { title_en: "Recommendations", title_ar: "التوصيات", subtitle_en: "Professional and academic recommendations.", subtitle_ar: "توصيات مهنية وأكاديمية." },
+      contact: { title_en: "Contact", title_ar: "تواصل معي", subtitle_en: "Have an opportunity or project? Let’s talk.", subtitle_ar: "عندك فرصة أو مشروع؟ خلينا نتواصل." }
+    }
+  },
   skills: [
     { id:1,  name_en:"TensorFlow",   name_ar:"تنسورفلو",      level:85, category:"ML",         icon:"🤖" },
     { id:2,  name_en:"Python",       name_ar:"بايثون",         level:92, category:"Dev",        icon:"🐍" },
@@ -459,15 +447,15 @@ const INITIAL = {
     { id:12, name_en:"Matplotlib",   name_ar:"ماتبلوتليب",     level:82, category:"Analytics",  icon:"📈" },
   ],
   projects: [
-    { id:1, title_en:"Data Decoders", title_ar:"محللو البيانات", description_en:"Comprehensive data analysis platform decoding complex datasets into actionable insights. Built as a team competition project with advanced visualizations and ML integration.", description_ar:"منصة شاملة لتحليل البيانات تحوّل مجموعات البيانات المعقدة إلى رؤى قابلة للتنفيذ.", tech:"Python, Pandas, Scikit-learn, Power BI, SQL", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#00E5FF", images:DEFAULT_PROJECT_IMAGES[1] },
-    { id:2, title_en:"Forest Cover Classification", title_ar:"تصنيف أنواع غطاء الغابات", description_en:"ML model classifying forest cover types using cartographic variables with ensemble methods, feature engineering, and hyperparameter tuning on UCI dataset.", description_ar:"نموذج تعلم آلة يصنّف أنواع غطاء الغابات باستخدام متغيرات الخرائط الطبوغرافية.", tech:"Python, Scikit-learn, XGBoost, NumPy, Matplotlib", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Machine Learning", color:"#22C55E", images:DEFAULT_PROJECT_IMAGES[2] },
-    { id:3, title_en:"Traffic Sign Recognition", title_ar:"التعرف على إشارات المرور", description_en:"Deep learning system for real-time traffic sign detection using CNNs. Trained on GTSRB dataset achieving 97%+ accuracy, suitable for autonomous driving.", description_ar:"نظام تعلم عميق للكشف عن إشارات المرور وتصنيفها في الوقت الفعلي بدقة 97%+.", tech:"Python, TensorFlow, Keras, OpenCV, NumPy", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Computer Vision", color:"#F59E0B", images:DEFAULT_PROJECT_IMAGES[3] },
-    { id:4, title_en:"AI Camera Dress Code", title_ar:"كاميرا ذكاء اصطناعي لكود اللباس", description_en:"Real-time AI system detecting dress code compliance using YOLOv8. Trained on 2,700+ labeled images with OpenCV integration for live camera inference.", description_ar:"نظام ذكاء اصطناعي للكشف عن الالتزام بكود اللباس باستخدام YOLOv8 مع أكثر من 2700 صورة مُصنَّفة.", tech:"Python, YOLOv8, OpenCV, PyTorch, Roboflow", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Computer Vision", color:"#8B5CF6", images:DEFAULT_PROJECT_IMAGES[4] },
-    { id:5, title_en:"StyleNest Apparel Analysis", title_ar:"StyleNest – تحليل الملابس", description_en:"E-commerce analytics platform analyzing apparel sales trends with customer segmentation, product performance dashboards, and predictive inventory modeling.", description_ar:"منصة تحليلات تجارة إلكترونية لتحليل اتجاهات مبيعات الملابس مع تقسيم العملاء.", tech:"Python, Pandas, Power BI, SQL, Seaborn", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Data Analytics", color:"#EC4899", images:DEFAULT_PROJECT_IMAGES[5] },
-    { id:6, title_en:"Student Score Prediction", title_ar:"التنبؤ بدرجات الطلاب", description_en:"Regression model predicting student academic performance. Includes interactive Flask web app for real-time predictions with feature importance visualization.", description_ar:"نموذج انحدار للتنبؤ بالأداء الأكاديمي مع تطبيق ويب Flask تفاعلي.", tech:"Python, Scikit-learn, Flask, Pandas, Plotly", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Machine Learning", color:"#06B6D4", images:DEFAULT_PROJECT_IMAGES[6] },
-    { id:7, title_en:"Customer Segmentation", title_ar:"تقسيم العملاء", description_en:"Unsupervised clustering solution for e-commerce customer segmentation. Identified 5 distinct customer personas enabling targeted marketing with 40% better ROI.", description_ar:"حل تجميع غير خاضع للإشراف يحدد 5 شرائح عملاء مميزة بعائد استثمار أفضل بـ40%.", tech:"Python, Scikit-learn, Pandas, Matplotlib, Seaborn", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Data Analytics", color:"#10B981", images:DEFAULT_PROJECT_IMAGES[7] },
-    { id:8, title_en:"Health Insurance Prediction", title_ar:"التنبؤ بالتأمين الصحي", description_en:"End-to-end ML pipeline predicting health insurance premium costs deployed as Flask web application with REST API and XGBoost achieving best performance.", description_ar:"خط أنابيب ML متكامل للتنبؤ بتكاليف أقساط التأمين الصحي مع نشر Flask API.", tech:"Python, XGBoost, Flask, Scikit-learn, Pandas", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Machine Learning", color:"#F97316", images:DEFAULT_PROJECT_IMAGES[8] },
-    { id:9, title_en:"Formula Student Analysis", title_ar:"تحليلات Formula Student", description_en:"Performance analytics system for Formula Student racing team analyzing telemetry data, lap times, and vehicle dynamics with SQL dashboards and Power BI reports.", description_ar:"نظام تحليلات أداء لفريق سباقات Formula Student مع لوحات SQL وتقارير Power BI.", tech:"Python, SQL, Power BI, Pandas, NumPy", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#EF4444", images:DEFAULT_PROJECT_IMAGES[9] },
+    { id:1, title_en:"Data Decoders", title_ar:"محللو البيانات", description_en:"Comprehensive data analysis platform decoding complex datasets into actionable insights. Built as a team competition project with advanced visualizations and ML integration.", description_ar:"منصة شاملة لتحليل البيانات تحوّل مجموعات البيانات المعقدة إلى رؤى قابلة للتنفيذ.", tech:"Python, Pandas, Scikit-learn, Power BI, SQL", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#00E5FF", images:[] },
+    { id:2, title_en:"Forest Cover Classification", title_ar:"تصنيف أنواع غطاء الغابات", description_en:"ML model classifying forest cover types using cartographic variables with ensemble methods, feature engineering, and hyperparameter tuning on UCI dataset.", description_ar:"نموذج تعلم آلة يصنّف أنواع غطاء الغابات باستخدام متغيرات الخرائط الطبوغرافية.", tech:"Python, Scikit-learn, XGBoost, NumPy, Matplotlib", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Machine Learning", color:"#22C55E", images:[] },
+    { id:3, title_en:"Traffic Sign Recognition", title_ar:"التعرف على إشارات المرور", description_en:"Deep learning system for real-time traffic sign detection using CNNs. Trained on GTSRB dataset achieving 97%+ accuracy, suitable for autonomous driving.", description_ar:"نظام تعلم عميق للكشف عن إشارات المرور وتصنيفها في الوقت الفعلي بدقة 97%+.", tech:"Python, TensorFlow, Keras, OpenCV, NumPy", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Computer Vision", color:"#F59E0B", images:[] },
+    { id:4, title_en:"AI Camera Dress Code", title_ar:"كاميرا ذكاء اصطناعي لكود اللباس", description_en:"Real-time AI system detecting dress code compliance using YOLOv8. Trained on 2,700+ labeled images with OpenCV integration for live camera inference.", description_ar:"نظام ذكاء اصطناعي للكشف عن الالتزام بكود اللباس باستخدام YOLOv8 مع أكثر من 2700 صورة مُصنَّفة.", tech:"Python, YOLOv8, OpenCV, PyTorch, Roboflow", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Computer Vision", color:"#8B5CF6", images:[] },
+    { id:5, title_en:"StyleNest Apparel Analysis", title_ar:"StyleNest – تحليل الملابس", description_en:"E-commerce analytics platform analyzing apparel sales trends with customer segmentation, product performance dashboards, and predictive inventory modeling.", description_ar:"منصة تحليلات تجارة إلكترونية لتحليل اتجاهات مبيعات الملابس مع تقسيم العملاء.", tech:"Python, Pandas, Power BI, SQL, Seaborn", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Data Analytics", color:"#EC4899", images:[] },
+    { id:6, title_en:"Student Score Prediction", title_ar:"التنبؤ بدرجات الطلاب", description_en:"Regression model predicting student academic performance. Includes interactive Flask web app for real-time predictions with feature importance visualization.", description_ar:"نموذج انحدار للتنبؤ بالأداء الأكاديمي مع تطبيق ويب Flask تفاعلي.", tech:"Python, Scikit-learn, Flask, Pandas, Plotly", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Machine Learning", color:"#06B6D4", images:[] },
+    { id:7, title_en:"Customer Segmentation", title_ar:"تقسيم العملاء", description_en:"Unsupervised clustering solution for e-commerce customer segmentation. Identified 5 distinct customer personas enabling targeted marketing with 40% better ROI.", description_ar:"حل تجميع غير خاضع للإشراف يحدد 5 شرائح عملاء مميزة بعائد استثمار أفضل بـ40%.", tech:"Python, Scikit-learn, Pandas, Matplotlib, Seaborn", github:"https://github.com/ahmedaymansoliman2004", live:"https://www.kaggle.com/sohagy1312", category:"Data Analytics", color:"#10B981", images:[] },
+    { id:8, title_en:"Health Insurance Prediction", title_ar:"التنبؤ بالتأمين الصحي", description_en:"End-to-end ML pipeline predicting health insurance premium costs deployed as Flask web application with REST API and XGBoost achieving best performance.", description_ar:"خط أنابيب ML متكامل للتنبؤ بتكاليف أقساط التأمين الصحي مع نشر Flask API.", tech:"Python, XGBoost, Flask, Scikit-learn, Pandas", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Machine Learning", color:"#F97316", images:[] },
+    { id:9, title_en:"Formula Student Analysis", title_ar:"تحليلات Formula Student", description_en:"Performance analytics system for Formula Student racing team analyzing telemetry data, lap times, and vehicle dynamics with SQL dashboards and Power BI reports.", description_ar:"نظام تحليلات أداء لفريق سباقات Formula Student مع لوحات SQL وتقارير Power BI.", tech:"Python, SQL, Power BI, Pandas, NumPy", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#EF4444", images:[] },
   ],
   experience: [
     { id:1, role_en:"IT Intern (AI Engineer)", role_ar:"متدرب تقنية المعلومات (مهندس ذكاء اصطناعي)", company_en:"Encryptcore", company_ar:"Encryptcore", period_en:"Aug 2026 – Sep 2026", period_ar:"أغسطس 2026 – سبتمبر 2026", type:"work", bullets_en:"Developed AI-based dress code detection system using YOLOv8\nWorked with 2,700+ labeled images and real-time OpenCV inference", bullets_ar:"طور نظام اكتشاف قواعد اللباس بالذكاء الاصطناعي باستخدام YOLOv8\nعمل مع 2700+ صورة مُصنَّفة واستدلال OpenCV في الوقت الفعلي", color:"#8B5CF6" },
@@ -681,7 +669,7 @@ function Modal({ title, onClose, children, wide }) {
   const t = useT();
   return (
     <div style={{ position:"fixed",inset:0,zIndex:7777,display:"flex",alignItems:"center",justifyContent:"center",padding:16,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(10px)" }}>
-      <div style={{ background:t.surface, border:`1px solid ${t.border}`, borderRadius:20, width:"100%", maxWidth:wide?"min(1180px, 96vw)":560, maxHeight:"92vh", overflowY:"auto", boxShadow:t.shadowLg }}>
+      <div style={{ background:t.surface, border:`1px solid ${t.border}`, borderRadius:20, width:"100%", maxWidth:wide?720:560, maxHeight:"92vh", overflowY:"auto", boxShadow:t.shadowLg }}>
         <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 24px",borderBottom:`1px solid ${t.border}`,position:"sticky",top:0,background:t.surface,zIndex:1 }}>
           <span style={{ fontSize:15, fontWeight:650, color:t.text, letterSpacing:"-0.01em" }}>{title}</span>
           <button onClick={onClose} style={{ background:"none",border:"none",cursor:"pointer",color:t.textMut,padding:6,borderRadius:8 }}>
@@ -829,7 +817,7 @@ function SectionHeader({ title, sub, icon, count, onAdd, langToggle }) {
 }
 
 // ─── DATA TABLE ──────────────────────────────────────────────
-function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
+function DataTable({ cols, rows, onEdit, onDelete, searchable, manualOrder=false, onMoveUp, onMoveDown }) {
   const t = useT();
   const [query, setQuery] = useState("");
   const [sortCol, setSortCol] = useState(null);
@@ -842,11 +830,11 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
   const { toast } = useToast();
 
   const filtered = rows.filter(r => !query || cols.some(c => String(r[c.key]??r[c.key+"_en"]??"").toLowerCase().includes(query.toLowerCase())));
-  const sorted = sortCol ? [...filtered].sort((a,b)=>{ const av=a[sortCol]??""; const bv=b[sortCol]??""; return sortDir==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av)); }) : filtered;
+  const sorted = manualOrder ? filtered : (sortCol ? [...filtered].sort((a,b)=>{ const av=a[sortCol]??""; const bv=b[sortCol]??""; return sortDir==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av)); }) : filtered);
   const pages = Math.max(1, Math.ceil(sorted.length/PER));
   const slice = sorted.slice((page-1)*PER, page*PER);
 
-  const toggleSort = col => { if(sortCol===col) setSortDir(d=>d==="asc"?"desc":"asc"); else{setSortCol(col);setSortDir("asc");} };
+  const toggleSort = col => { if (manualOrder) return; if(sortCol===col) setSortDir(d=>d==="asc"?"desc":"asc"); else{setSortCol(col);setSortDir("asc");} };
   const allChecked = slice.length>0 && slice.every(r=>selected.has(r.id));
   const toggleAll = () => { setSelected(s=>{ const n=new Set(s); if(allChecked)slice.forEach(r=>n.delete(r.id)); else slice.forEach(r=>n.add(r.id)); return n; }); };
 
@@ -897,6 +885,7 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
                     ))}
                     <td style={{ padding:"11px 14px" }}>
                       <div style={{ display:"flex",justifyContent:"flex-end",gap:4 }}>
+                        {manualOrder && (<><IconBtn icon={I.arrowUp} onClick={()=>onMoveUp?.(row.id)} title="Move up" disabled={rows.findIndex(x=>x.id===row.id)===0} /><IconBtn icon={I.arrowDown} onClick={()=>onMoveDown?.(row.id)} title="Move down" disabled={rows.findIndex(x=>x.id===row.id)===rows.length-1} /></>)}
                         <IconBtn icon={I.edit} onClick={()=>onEdit(row)} title="Edit" />
                         <IconBtn icon={I.trash} onClick={()=>setConfirmId(row.id)} title="Delete" danger />
                       </div>
@@ -924,11 +913,11 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
   );
 }
 
-function IconBtn({ icon, onClick, title, danger }) {
+function IconBtn({ icon, onClick, title, danger, disabled=false }) {
   const t = useT(); const [hov,setHov]=useState(false);
   return (
-    <button onClick={onClick} title={title} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ display:"flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:8,border:`1px solid ${hov&&danger?t.danger+"50":t.border}`,background:hov?(danger?t.dangerSoft:t.surfaceEl):"transparent",color:hov?(danger?t.danger:t.text):t.textMut,cursor:"pointer",transition:"all 0.15s" }}>
+    <button disabled={disabled} onClick={disabled?undefined:onClick} title={title} onMouseEnter={()=>!disabled&&setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{ display:"flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:8,border:`1px solid ${hov&&danger?t.danger+"50":t.border}`,background:hov?(danger?t.dangerSoft:t.surfaceEl):"transparent",color:hov?(danger?t.danger:t.text):t.textMut,cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.35:1,transition:"all 0.15s" }}>
       <Ic d={icon} size={13} />
     </button>
   );
@@ -1117,6 +1106,19 @@ function AboutSection({ data, setData }) {
   );
 }
 
+// ── MANUAL ORDER HELPER ───────────────────────────────────────
+const moveItemInArray = (setData, key, id, direction) => {
+  setData(d => {
+    const arr = [...(d[key] || [])];
+    const index = arr.findIndex(item => item.id === id);
+    if (index === -1) return d;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= arr.length) return d;
+    [arr[index], arr[targetIndex]] = [arr[targetIndex], arr[index]];
+    return { ...d, [key]: arr };
+  });
+};
+
 // ── SKILLS ───────────────────────────────────────────────────
 const blankSkill = () => ({ id:++_id, name_en:"", name_ar:"", level:70, category:"ML", icon:"⭐" });
 
@@ -1146,7 +1148,7 @@ function SkillsSection({ data, setData }) {
             </div>
           )},
         ]}
-        rows={data.skills} onEdit={open} onDelete={del}
+        rows={data.skills} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"skills",id,"up")} onMoveDown={id=>moveItemInArray(setData,"skills",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Skill":"Edit Skill"} onClose={close}>
@@ -1180,7 +1182,7 @@ function SkillsSection({ data, setData }) {
 }
 
 // ── PROJECTS ─────────────────────────────────────────────────
-const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", category:"Machine Learning", color:"#818cf8", images:[] });
+const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", category:"Machine Learning", color:"#818cf8" });
 
 function ProjectsSection({ data, setData }) {
   const [modal, setModal] = useState(null);
@@ -1188,7 +1190,7 @@ function ProjectsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?normalizeProjectImages({...item}):blankProject()); setModal(item?"edit":"add"); };
+  const open = (item=null) => { setForm(item?{...item}:blankProject()); setModal(item?"edit":"add"); };
   const close = () => setModal(null);
   const save = () => { setData(d=>({...d,projects:modal==="add"?[...d.projects,form]:d.projects.map(p=>p.id===form.id?form:p)})); toast(modal==="add"?"Project added!":"Updated!","success"); close(); };
   const del = id => setData(d=>({...d,projects:d.projects.filter(p=>p.id!==id)}));
@@ -1207,7 +1209,7 @@ function ProjectsSection({ data, setData }) {
           { key:"tech", label:"Stack", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
           { key:"github", label:"GitHub", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>↗</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
-        rows={data.projects} onEdit={open} onDelete={del}
+        rows={data.projects} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"projects",id,"up")} onMoveDown={id=>moveItemInArray(setData,"projects",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Project":"Edit Project"} onClose={close} wide>
@@ -1271,7 +1273,7 @@ function ExperienceSection({ data, setData }) {
           { key:"company_en", label:"Company" },
           { key:"period_en", label:"Period", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
         ]}
-        rows={data.experience} onEdit={open} onDelete={del}
+        rows={data.experience} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"experience",id,"up")} onMoveDown={id=>moveItemInArray(setData,"experience",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Experience":"Edit Experience"} onClose={close} wide>
@@ -1331,7 +1333,7 @@ function ReviewsSection({ data, setData }) {
           { key:"rating", label:"Rating", render:v=><Stars n={v} /> },
           { key:"comment_en", label:"Comment", render:v=><span style={{ fontSize:12,color:t.textSub }}>{v?.slice(0,50)}{v?.length>50?"…":""}</span> },
         ]}
-        rows={data.reviews} onEdit={open} onDelete={del}
+        rows={data.reviews} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"reviews",id,"up")} onMoveDown={id=>moveItemInArray(setData,"reviews",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Review":"Edit Review"} onClose={close} wide>
@@ -1392,7 +1394,7 @@ function RecsSection({ data, setData }) {
           { key:"title_en", label:"Title" },
           { key:"linkedin", label:"LinkedIn", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>Profile ↗</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
-        rows={data.recommendations} onEdit={open} onDelete={del}
+        rows={data.recommendations} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"recommendations",id,"up")} onMoveDown={id=>moveItemInArray(setData,"recommendations",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Recommendation":"Edit Recommendation"} onClose={close} wide>
@@ -1453,7 +1455,7 @@ function CertsSection({ data, setData }) {
           { key:"date", label:"Date", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
           { key:"badge", label:"Badge", render:v=><CategoryPill cat={v} /> },
         ]}
-        rows={data.certificates} onEdit={open} onDelete={del}
+        rows={data.certificates} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"certificates",id,"up")} onMoveDown={id=>moveItemInArray(setData,"certificates",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Certificate":"Edit Certificate"} onClose={close} wide>
@@ -1707,15 +1709,30 @@ CREATE TABLE recommendations (
   );
 }
 
+// ── SITE TEXT ─────────────────────────────────────────────────
+function SiteTextSection({ data, setData }) {
+  const [form, setForm] = useState(data.siteText || INITIAL.siteText);
+  const [lang, setLang] = useState("en");
+  const { toast } = useToast();
+  const t = useT();
+  const save = () => { setData(d => ({ ...d, siteText: form })); toast("Site text saved!", "success"); };
+  const updateHero = (key, value) => setForm(f => ({ ...f, hero: { ...f.hero, [key]: value } }));
+  const updateSection = (section, key, value) => setForm(f => ({ ...f, sections: { ...f.sections, [section]: { ...f.sections[section], [key]: value } } }));
+  const sectionKeys = ["about", "skills", "projects", "experience", "certificates", "reviews", "recommendations", "contact"];
+  return <div><SectionHeader title="Site Text" icon={I.text} count={sectionKeys.length + 1} langToggle={<LangToggle lang={lang} setLang={setLang} />} /><Card style={{ marginBottom: 16 }}><div style={{ fontSize:13,fontWeight:700,marginBottom:14,color:t.text }}>Home / Hero Text</div><div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}><Input label={lang === "en" ? "Hero Subtitle (EN)" : "العنوان الفرعي في الصفحة الرئيسية"} value={lang === "en" ? form.hero.subtitle_en : form.hero.subtitle_ar} isAr={lang === "ar"} onChange={e => updateHero(lang === "en" ? "subtitle_en" : "subtitle_ar", e.target.value)} /><Textarea label={lang === "en" ? "Hero Description (EN)" : "الوصف تحت الاسم في الصفحة الرئيسية"} value={lang === "en" ? form.hero.description_en : form.hero.description_ar} rows={3} isAr={lang === "ar"} onChange={e => updateHero(lang === "en" ? "description_en" : "description_ar", e.target.value)} /></div></Card><Card><div style={{ fontSize:13,fontWeight:700,marginBottom:14,color:t.text }}>Section Titles & Subtitles</div><div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14 }}>{sectionKeys.map(key => <div key={key} style={{ border:`1px solid ${t.border}`, borderRadius:12, padding:14 }}><div style={{ fontSize:12,fontWeight:800,textTransform:"uppercase",marginBottom:10,color:t.accent }}>{key}</div><Input label={lang === "en" ? "Title (EN)" : "العنوان (AR)"} value={lang === "en" ? form.sections[key].title_en : form.sections[key].title_ar} isAr={lang === "ar"} onChange={e => updateSection(key, lang === "en" ? "title_en" : "title_ar", e.target.value)} /><div style={{ height:10 }} /><Textarea label={lang === "en" ? "Subtitle (EN)" : "الوصف تحت العنوان (AR)"} value={lang === "en" ? form.sections[key].subtitle_en : form.sections[key].subtitle_ar} rows={3} isAr={lang === "ar"} onChange={e => updateSection(key, lang === "en" ? "subtitle_en" : "subtitle_ar", e.target.value)} /></div>)}</div><div style={{ display:"flex",justifyContent:"flex-end",marginTop:18 }}><Btn onClick={save}><Ic d={I.save} size={13} /> Save Site Text</Btn></div></Card></div>;
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function SettingsSection() {
+  const [oldPw, setOldPw] = useState(""); const [newPw1, setNewPw1] = useState(""); const [newPw2, setNewPw2] = useState("");
+  const { toast } = useToast(); const t = useT();
+  const save = e => { e.preventDefault(); if (oldPw !== _savedPw.current) { toast("Current password is wrong.", "error"); return; } if (newPw1.length < 6) { toast("New password must be at least 6 characters.", "error"); return; } if (newPw1 !== newPw2) { toast("Confirm password does not match.", "error"); return; } _savedPw.current = newPw1; setOldPw(""); setNewPw1(""); setNewPw2(""); toast("Password changed successfully!", "success"); };
+  return <div><SectionHeader title="Settings" icon={I.settings} /><Card style={{ maxWidth:520 }}><div style={{ fontSize:14,fontWeight:800,color:t.text,marginBottom:6 }}>Change Dashboard Password</div><p style={{ fontSize:12,color:t.textSub,lineHeight:1.6,marginBottom:16 }}>Password management is now inside the dashboard, not on the login screen.</p><form onSubmit={save} style={{ display:"flex",flexDirection:"column",gap:12 }}><Input type="password" label="Current Password" value={oldPw} onChange={e=>setOldPw(e.target.value)} /><Input type="password" label="New Password" value={newPw1} onChange={e=>setNewPw1(e.target.value)} /><Input type="password" label="Confirm New Password" value={newPw2} onChange={e=>setNewPw2(e.target.value)} /><div style={{ display:"flex",justifyContent:"flex-end",marginTop:8 }}><Btn type="submit"><Ic d={I.save} size={13} /> Save Password</Btn></div></form></Card></div>;
+}
+
 // ── LOGIN ─────────────────────────────────────────────────────
 // Stores current password in module-level ref so it persists across logout/login cycles
-const PASSWORD_STORAGE_KEY = "portfolio_admin_password";
-const DEFAULT_ADMIN_PASSWORD = "admin123";
-const _savedPw = {
-  current: typeof window !== "undefined"
-    ? (localStorage.getItem(PASSWORD_STORAGE_KEY) || DEFAULT_ADMIN_PASSWORD)
-    : DEFAULT_ADMIN_PASSWORD
-};
+const _savedPw = { current: "admin123" };
 
 function LoginPage({ onLogin }) {
   const [pw,      setPw]      = useState("");
@@ -1756,7 +1773,6 @@ function LoginPage({ onLogin }) {
     if (newPw1.length < 6)             { setChgError("New password must be at least 6 characters."); return; }
     if (newPw1 !== newPw2)             { setChgError("New passwords don't match."); return; }
     _savedPw.current = newPw1;
-    localStorage.setItem(PASSWORD_STORAGE_KEY, newPw1);
     setChgSuccess("✓ Password changed successfully!");
     setOldPw(""); setNewPw1(""); setNewPw2("");
     setTimeout(() => { setChanging(false); setChgSuccess(""); }, 1800);
@@ -1801,7 +1817,7 @@ function LoginPage({ onLogin }) {
 
           {/* ── TAB BAR ── */}
           <div style={{ display:"flex",gap:4,marginBottom:22,background:t.surfaceEl,borderRadius:11,padding:3 }}>
-            {[["login","Sign In"],["change","Change Password"]].map(([id,lbl])=>(
+            {[["login","Sign In"]].map(([id,lbl])=>(
               <button key={id} onClick={()=>{setChanging(id==="change");setError("");setChgError("");setChgSuccess("");}}
                 style={{ flex:1,padding:"7px 0",borderRadius:9,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,transition:"all 0.15s",
                   background: (id==="change")===changing ? t.accent : "transparent",
@@ -1873,10 +1889,69 @@ function LoginPage({ onLogin }) {
   );
 }
 
+// ─── CMS PERSISTENCE / API SYNC ─────────────────────────────
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const STORAGE_KEY = "ahmed_portfolio_cms_data";
+
+function mergeSiteText(incomingSiteText = {}) {
+  const incomingSections = incomingSiteText.sections || {};
+  const mergedSections = {};
+  Object.keys(INITIAL.siteText.sections).forEach(key => {
+    mergedSections[key] = { ...INITIAL.siteText.sections[key], ...(incomingSections[key] || {}) };
+  });
+  return {
+    ...INITIAL.siteText,
+    ...incomingSiteText,
+    hero: { ...INITIAL.siteText.hero, ...(incomingSiteText.hero || {}) },
+    sections: mergedSections,
+  };
+}
+
+function normalizeCmsData(incoming) {
+  if (!incoming || typeof incoming !== "object") return INITIAL;
+  return {
+    ...INITIAL,
+    ...incoming,
+    about: { ...INITIAL.about, ...(incoming.about || {}), stats: { ...INITIAL.about.stats, ...(incoming.about?.stats || {}) } },
+    siteText: mergeSiteText(incoming.siteText),
+    skills: Array.isArray(incoming.skills) ? incoming.skills : INITIAL.skills,
+    projects: Array.isArray(incoming.projects) ? incoming.projects : INITIAL.projects,
+    experience: Array.isArray(incoming.experience) ? incoming.experience : INITIAL.experience,
+    reviews: Array.isArray(incoming.reviews) ? incoming.reviews : INITIAL.reviews,
+    recommendations: Array.isArray(incoming.recommendations) ? incoming.recommendations : INITIAL.recommendations,
+    certificates: Array.isArray(incoming.certificates) ? incoming.certificates : INITIAL.certificates,
+    links: Array.isArray(incoming.links) ? incoming.links : INITIAL.links,
+    social: Array.isArray(incoming.social) ? incoming.social : INITIAL.social,
+    contact: Array.isArray(incoming.contact) ? incoming.contact : INITIAL.contact,
+  };
+}
+
+async function publishCmsData(data) {
+  const normalized = normalizeCmsData(data);
+  const payload = JSON.stringify(normalized);
+  localStorage.setItem(STORAGE_KEY, payload);
+  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: normalized }));
+  const endpoints = [
+    { url: `${API_URL}/api/content`, options: { method: "PUT" } },
+    { url: `${API_URL}/api/seed`, options: { method: "POST" } },
+  ];
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint.url, { ...endpoint.options, headers: { "Content-Type": "application/json" }, body: payload });
+      if (res.ok) return true;
+      lastError = new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Publish failed");
+}
 // ─── NAV CONFIG ──────────────────────────────────────────────
 const NAV = [
   { id:"overview",        label:"Overview",        icon:I.dashboard,  group:"main" },
   { id:"about",           label:"About / Bio",     icon:I.about,      group:"content" },
+  { id:"siteText",        label:"Site Text",       icon:I.text,       group:"content" },
   { id:"skills",          label:"Skills",          icon:I.skills,     group:"content" },
   { id:"projects",        label:"Projects",        icon:I.projects,   group:"content" },
   { id:"experience",      label:"Experience",      icon:I.experience, group:"content" },
@@ -1886,24 +1961,58 @@ const NAV = [
   { id:"links",           label:"Links",           icon:I.links,      group:"meta" },
   { id:"social",          label:"Social Media",    icon:I.social,     group:"meta" },
   { id:"contact",         label:"Contact Info",    icon:I.contact,    group:"meta" },
+  { id:"settings",        label:"Settings",        icon:I.settings,   group:"dev" },
   { id:"seed",            label:"DB & Export",     icon:I.api,        group:"dev" },
 ];
 
 // ─── DASHBOARD SHELL ─────────────────────────────────────────
 function Dashboard({ onLogout }) {
   const [active, setActive] = useState("overview");
-  const [data, setData] = useState(loadCmsData);
+  const [data, setData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? normalizeCmsData(JSON.parse(saved)) : INITIAL;
+    } catch {
+      return INITIAL;
+    }
+  });
   const [sideOpen, setSideOpen] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("saved");
+  const [hydrated, setHydrated] = useState(false);
   const { dark, toggle } = useTheme();
   const t = useT();
 
   useEffect(() => {
-    localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    let cancelled = false;
+    fetch(`${API_URL}/api/content`)
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then(remote => {
+        if (!cancelled && remote && typeof remote === "object") {
+          setData(normalizeCmsData(remote));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setHydrated(true);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    setSaveStatus("saving");
+    const timer = setTimeout(() => {
+      publishCmsData(data)
+        .then(() => setSaveStatus("saved"))
+        .catch(() => setSaveStatus("local"));
+    }, 650);
+    return () => clearTimeout(timer);
+  }, [data, hydrated]);
 
   const sections = {
     overview:        <Overview data={data} />,
     about:           <AboutSection data={data} setData={setData} />,
+    siteText:        <SiteTextSection data={data} setData={setData} />,
     skills:          <SkillsSection data={data} setData={setData} />,
     projects:        <ProjectsSection data={data} setData={setData} />,
     experience:      <ExperienceSection data={data} setData={setData} />,
@@ -1913,6 +2022,7 @@ function Dashboard({ onLogout }) {
     links:           <LinksSection data={data} setData={setData} />,
     social:          <SocialSection data={data} setData={setData} />,
     contact:         <ContactSection data={data} setData={setData} />,
+    settings:        <SettingsSection />,
     seed:            <SeedPanel data={data} />,
   };
 
@@ -1977,7 +2087,7 @@ function Dashboard({ onLogout }) {
           <div style={{ flex:1,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(4px)" }} onClick={()=>setSideOpen(false)} />
         </div>
       )}
-      <div style={{ flex:1,display:"flex",flexDirection:"column",minWidth:0,overflow:"hidden",width:"100%" }}>
+      <div style={{ flex:1,display:"flex",flexDirection:"column",minWidth:0,overflow:"hidden" }}>
         <header style={{ display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 24px",height:56,flexShrink:0,background:t.header,borderBottom:`1px solid ${t.border}`,backdropFilter:"blur(16px)" }}>
           <div style={{ display:"flex",alignItems:"center",gap:12 }}>
             <button onClick={()=>setSideOpen(true)} style={{ display:"flex",background:"none",border:"none",cursor:"pointer",color:t.textMut,padding:4,borderRadius:8 }}><Ic d={I.menu} size={18} /></button>
@@ -1990,14 +2100,14 @@ function Dashboard({ onLogout }) {
           </div>
           <div style={{ display:"flex",alignItems:"center",gap:8 }}>
             <div style={{ display:"flex",alignItems:"center",gap:5,background:t.successSoft,border:`1px solid ${t.success}30`,color:t.success,padding:"5px 10px",borderRadius:99,fontSize:11,fontWeight:700 }}>
-              <span style={{ width:6,height:6,borderRadius:"50%",background:t.success,display:"inline-block",boxShadow:`0 0 6px ${t.success}` }} />Online
+              <span style={{ width:6,height:6,borderRadius:"50%",background:saveStatus==="saving"?t.warn:t.success,display:"inline-block",boxShadow:`0 0 6px ${saveStatus==="saving"?t.warn:t.success}` }} />{saveStatus==="saving"?"Saving...":saveStatus==="local"?"Saved locally":"Published"}
             </div>
             <div style={{ display:"flex",alignItems:"center",gap:5,background:t.arSoft,border:`1px solid ${t.ar}30`,color:t.ar,padding:"5px 10px",borderRadius:99,fontSize:11,fontWeight:700,fontFamily:"'Cairo',sans-serif" }}>🌐 ثنائي</div>
             <div style={{ width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${t.accent},#7c3aed)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:750,color:"#fff" }}>A</div>
           </div>
         </header>
         <main style={{ flex:1,overflowY:"auto",padding:"28px 32px",width:"100%" }}>
-          <div style={{ width:"100%" }}>
+          <div style={{ width:"100%",maxWidth:"none",margin:0 }}>
             {sections[active]}
           </div>
         </main>
@@ -2033,3 +2143,53 @@ export default function AdminApp() {
   );
 }
 
+/*
+════════════════════════════════════════════════════════════════
+  WHAT'S NEW IN THIS BILINGUAL EDITION
+════════════════════════════════════════════════════════════════
+
+✅ ALL REAL DATA PRE-LOADED:
+   - 9 Projects (all bilingual)
+   - 12 Skills (all bilingual) 
+   - 8 Certificates (all bilingual)
+   - 6 Experience entries (all bilingual)
+   - 5 Reviews (all bilingual)
+   - 1 Recommendation (Dr. Amal Mahmoud, bilingual)
+   - 5 Links
+   - 4 Social
+   - 4 Contact
+
+✅ BILINGUAL SUPPORT (AR/EN):
+   - Language toggle (EN 🇺🇸 / AR 🇪🇬) on every section header
+   - Every form has bilingual fields with AR/EN toggle
+   - Arabic text uses Cairo/Noto Sans Arabic font
+   - Arabic fields have RTL direction and right-aligned text
+   - Arabic content highlighted in orange (#fb923c) 
+   - Orange focus ring and background for AR fields
+
+✅ DATABASE VERIFICATION PANEL:
+   - Expandable count verifier on the Overview page
+   - DB & Export tab with per-category counts
+
+✅ EXPORT / SEED TOOLS:
+   - DB & Export section (sidebar)
+   - Download portfolio-data.json (full bilingual data)
+   - SQL schema for bilingual tables
+   - API seed endpoint guidance
+
+✅ UI IMPROVEMENTS:
+   - Record counts shown in sidebar nav items
+   - Page size increased to 10 records
+   - BilingualSection wrapper highlights AR fields
+   - Header shows "AR · EN · Bilingual CMS"
+
+════════════════════════════════════════════════════════════════
+  SETUP
+════════════════════════════════════════════════════════════════
+1. npm create vite@latest admin -- --template react
+2. cd admin && npm install  
+3. Replace src/App.jsx with this file
+4. import AdminApp from './App' in main.jsx → <AdminApp />
+5. Set your own password in the Change Password tab on the login screen
+════════════════════════════════════════════════════════════════
+*/

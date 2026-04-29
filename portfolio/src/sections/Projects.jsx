@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Github } from 'lucide-react';
 import { projects as fallbackProjects } from '../data/projects';
-import { useCms, cmsProjects } from '../context/CmsContext';
+import { useCms, cmsProjects, siteText } from '../context/CmsContext';
 import ProjectCard from '../components/ProjectCard';
 import ProjectModal from '../components/ProjectModal';
 import { useLang } from '../context/LangContext';
@@ -25,9 +25,10 @@ export default function Projects() {
 
   const allLabel = lang === 'ar' ? 'الكل' : 'All';
   const githubLabel = lang === 'ar' ? 'عرض الكل على GitHub' : 'View all on GitHub';
-  const sectionDesc = lang === 'ar'
+  const projectsTitle = siteText(cmsData, 'projects', 'title', lang, t.projects.title);
+  const sectionDesc = siteText(cmsData, 'projects', 'subtitle', lang, lang === 'ar'
     ? 'أنظمة ML متكاملة، تطبيقات رؤية الحاسوب، وخطوط أنابيب هندسة البيانات.'
-    : 'End-to-end ML systems, computer vision applications, and data engineering pipelines.';
+    : 'End-to-end ML systems, computer vision applications, and data engineering pipelines.');
 
   const filtered = filterKey === ALL_KEY
     ? projects
@@ -44,7 +45,7 @@ export default function Projects() {
           className="mb-12 text-center"
         >
           <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.projects.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{t.projects.title}</h2>
+          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{projectsTitle}</h2>
           <p className="text-gray-500 dark:text-gray-500 max-w-xl mx-auto">{sectionDesc}</p>
         </motion.div>
 

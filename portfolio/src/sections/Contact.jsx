@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, ExternalLink, Send, MapPin, Phone } from 'lucide-react';
 import { useLang } from '../context/LangContext';
+import { useCms, siteText } from '../context/CmsContext';
 
 export default function Contact() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { data: cmsData } = useCms();
+  const contactTitle = siteText(cmsData, 'contact', 'title', lang, t.contact.title);
+  const contactSubtitle = siteText(cmsData, 'contact', 'subtitle', lang, t.contact.subtitle);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
 
@@ -40,8 +44,8 @@ export default function Contact() {
           className="mb-12 text-center"
         >
           <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.contact.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{t.contact.title}</h2>
-          <p className="text-gray-500 dark:text-gray-500 max-w-md mx-auto">{t.contact.subtitle}</p>
+          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{contactTitle}</h2>
+          <p className="text-gray-500 dark:text-gray-500 max-w-md mx-auto">{contactSubtitle}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">

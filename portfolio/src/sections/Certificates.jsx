@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { certificates as fallbackCertificates } from '../data/certificates';
-import { useCms, cmsCertificates } from '../context/CmsContext';
+import { useCms, cmsCertificates, siteText } from '../context/CmsContext';
 import CertificateCard from '../components/CertificateCard';
 import CertificateLightbox from '../components/CertificateLightbox';
 import { useLang } from '../context/LangContext';
@@ -20,6 +20,10 @@ export default function Certificates() {
   const [lightbox, setLightbox] = useState(null);
 
   const isAr = lang === 'ar';
+  const certificatesTitle = siteText(cmsData, 'certificates', 'title', lang, t.certificates.title);
+  const certificatesSubtitle = siteText(cmsData, 'certificates', 'subtitle', lang, isAr
+    ? 'شهادات مهنية وورش عمل مكتملة في الذكاء الاصطناعي والبيانات والتكنولوجيا.'
+    : 'Professional certifications, internships & workshops in AI, data, and technology.');
 
   const filtered = active === 'All'
     ? certificates
@@ -42,12 +46,10 @@ export default function Certificates() {
             {t.certificates.label}
           </p>
           <h2 className="section-heading text-gray-900 dark:text-white mb-4">
-            {t.certificates.title}
+            {certificatesTitle}
           </h2>
           <p className="text-gray-500 dark:text-gray-500 max-w-lg mx-auto text-sm">
-            {isAr
-              ? 'شهادات مهنية وورش عمل مكتملة في الذكاء الاصطناعي والبيانات والتكنولوجيا.'
-              : 'Professional certifications, internships & workshops in AI, data, and technology.'}
+            {certificatesSubtitle}
           </p>
         </motion.div>
 

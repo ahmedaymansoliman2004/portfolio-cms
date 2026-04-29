@@ -8,8 +8,6 @@
 
 import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
-
 // ─── THEME CONTEXT ────────────────────────────────────────────
 const ThemeCtx = createContext({ dark: true, toggle: () => {} });
 const useTheme = () => useContext(ThemeCtx);
@@ -60,6 +58,10 @@ const I = {
   info:       ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M12 8v4","M12 16h.01"],
   upload:     ["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M17 8l-5-5-5 5","M12 3v12"],
   image:      ["M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"],
+  arrowUp:    ["M12 19V5","M5 12l7-7 7 7"],
+  arrowDown:  ["M12 5v14","M19 12l-7 7-7-7"],
+  settings:   ["M12 15.5A3.5 3.5 0 1012 8a3.5 3.5 0 000 7.5z","M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.31.48.6 1.51.6H21a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"],
+  text:       ["M4 7h16","M4 12h16","M4 17h10"],
   xCircle:    ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M15 9l-6 6","M9 9l6 6"],
 };
 
@@ -411,6 +413,24 @@ const INITIAL = {
     bio4_en: "Open to internships and freelance collaborations in AI and data engineering.",
     bio4_ar: "أبحث حالياً عن فرص التدريب والعمل الحر في الذكاء الاصطناعي وهندسة البيانات.",
     stats: { projects: "9+", gpa: "3.63", internships: "2+" },
+  },
+  siteText: {
+    hero: {
+      subtitle_en: "AI Engineer · Data Engineer · MIS Student",
+      subtitle_ar: "مهندس ذكاء اصطناعي · مهندس بيانات · طالب نظم معلومات إدارية",
+      description_en: "I build intelligent systems that combine machine learning, data engineering, and clean user experiences.",
+      description_ar: "أبني أنظمة ذكية تجمع بين تعلم الآلة، هندسة البيانات، وتجربة استخدام واضحة واحترافية."
+    },
+    sections: {
+      about: { title_en: "About", title_ar: "نبذة عني", subtitle_en: "A quick summary of my background, skills, and practical experience.", subtitle_ar: "ملخص سريع عن خلفيتي ومهاراتي وخبرتي العملية." },
+      skills: { title_en: "Skills", title_ar: "المهارات", subtitle_en: "The main tools and technologies I use across AI, data, and development.", subtitle_ar: "أهم الأدوات والتقنيات التي أستخدمها في الذكاء الاصطناعي والبيانات والتطوير." },
+      projects: { title_en: "Projects", title_ar: "المشاريع", subtitle_en: "End-to-end ML systems, computer vision applications, and data engineering pipelines.", subtitle_ar: "أنظمة ML متكاملة، تطبيقات رؤية الحاسوب، وخطوط أنابيب هندسة البيانات." },
+      experience: { title_en: "Experience", title_ar: "الخبرات", subtitle_en: "Internships, freelance work, and hands-on technical experience.", subtitle_ar: "تدريبات، أعمال حرة، وخبرة تقنية عملية." },
+      certificates: { title_en: "Certifications", title_ar: "الشهادات", subtitle_en: "Selected certificates and learning achievements.", subtitle_ar: "مجموعة مختارة من الشهادات والإنجازات التعليمية." },
+      reviews: { title_en: "Reviews", title_ar: "آراء العملاء", subtitle_en: "Client feedback and recommendations from real work.", subtitle_ar: "آراء العملاء والتوصيات من أعمال حقيقية." },
+      recommendations: { title_en: "Recommendations", title_ar: "التوصيات", subtitle_en: "Professional and academic recommendations.", subtitle_ar: "توصيات مهنية وأكاديمية." },
+      contact: { title_en: "Contact", title_ar: "تواصل معي", subtitle_en: "Have an opportunity or project? Let’s talk.", subtitle_ar: "عندك فرصة أو مشروع؟ خلينا نتواصل." }
+    }
   },
   skills: [
     { id:1,  name_en:"TensorFlow",   name_ar:"تنسورفلو",      level:85, category:"ML",         icon:"🤖" },
@@ -797,7 +817,7 @@ function SectionHeader({ title, sub, icon, count, onAdd, langToggle }) {
 }
 
 // ─── DATA TABLE ──────────────────────────────────────────────
-function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
+function DataTable({ cols, rows, onEdit, onDelete, searchable, manualOrder=false, onMoveUp, onMoveDown }) {
   const t = useT();
   const [query, setQuery] = useState("");
   const [sortCol, setSortCol] = useState(null);
@@ -810,11 +830,11 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
   const { toast } = useToast();
 
   const filtered = rows.filter(r => !query || cols.some(c => String(r[c.key]??r[c.key+"_en"]??"").toLowerCase().includes(query.toLowerCase())));
-  const sorted = sortCol ? [...filtered].sort((a,b)=>{ const av=a[sortCol]??""; const bv=b[sortCol]??""; return sortDir==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av)); }) : filtered;
+  const sorted = manualOrder ? filtered : (sortCol ? [...filtered].sort((a,b)=>{ const av=a[sortCol]??""; const bv=b[sortCol]??""; return sortDir==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av)); }) : filtered);
   const pages = Math.max(1, Math.ceil(sorted.length/PER));
   const slice = sorted.slice((page-1)*PER, page*PER);
 
-  const toggleSort = col => { if(sortCol===col) setSortDir(d=>d==="asc"?"desc":"asc"); else{setSortCol(col);setSortDir("asc");} };
+  const toggleSort = col => { if (manualOrder) return; if(sortCol===col) setSortDir(d=>d==="asc"?"desc":"asc"); else{setSortCol(col);setSortDir("asc");} };
   const allChecked = slice.length>0 && slice.every(r=>selected.has(r.id));
   const toggleAll = () => { setSelected(s=>{ const n=new Set(s); if(allChecked)slice.forEach(r=>n.delete(r.id)); else slice.forEach(r=>n.add(r.id)); return n; }); };
 
@@ -865,6 +885,7 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
                     ))}
                     <td style={{ padding:"11px 14px" }}>
                       <div style={{ display:"flex",justifyContent:"flex-end",gap:4 }}>
+                        {manualOrder && (<><IconBtn icon={I.arrowUp} onClick={()=>onMoveUp?.(row.id)} title="Move up" disabled={rows.findIndex(x=>x.id===row.id)===0} /><IconBtn icon={I.arrowDown} onClick={()=>onMoveDown?.(row.id)} title="Move down" disabled={rows.findIndex(x=>x.id===row.id)===rows.length-1} /></>)}
                         <IconBtn icon={I.edit} onClick={()=>onEdit(row)} title="Edit" />
                         <IconBtn icon={I.trash} onClick={()=>setConfirmId(row.id)} title="Delete" danger />
                       </div>
@@ -892,11 +913,11 @@ function DataTable({ cols, rows, onEdit, onDelete, searchable }) {
   );
 }
 
-function IconBtn({ icon, onClick, title, danger }) {
+function IconBtn({ icon, onClick, title, danger, disabled=false }) {
   const t = useT(); const [hov,setHov]=useState(false);
   return (
-    <button onClick={onClick} title={title} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ display:"flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:8,border:`1px solid ${hov&&danger?t.danger+"50":t.border}`,background:hov?(danger?t.dangerSoft:t.surfaceEl):"transparent",color:hov?(danger?t.danger:t.text):t.textMut,cursor:"pointer",transition:"all 0.15s" }}>
+    <button disabled={disabled} onClick={disabled?undefined:onClick} title={title} onMouseEnter={()=>!disabled&&setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{ display:"flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:8,border:`1px solid ${hov&&danger?t.danger+"50":t.border}`,background:hov?(danger?t.dangerSoft:t.surfaceEl):"transparent",color:hov?(danger?t.danger:t.text):t.textMut,cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.35:1,transition:"all 0.15s" }}>
       <Ic d={icon} size={13} />
     </button>
   );
@@ -1085,6 +1106,19 @@ function AboutSection({ data, setData }) {
   );
 }
 
+// ── MANUAL ORDER HELPER ───────────────────────────────────────
+const moveItemInArray = (setData, key, id, direction) => {
+  setData(d => {
+    const arr = [...(d[key] || [])];
+    const index = arr.findIndex(item => item.id === id);
+    if (index === -1) return d;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= arr.length) return d;
+    [arr[index], arr[targetIndex]] = [arr[targetIndex], arr[index]];
+    return { ...d, [key]: arr };
+  });
+};
+
 // ── SKILLS ───────────────────────────────────────────────────
 const blankSkill = () => ({ id:++_id, name_en:"", name_ar:"", level:70, category:"ML", icon:"⭐" });
 
@@ -1114,7 +1148,7 @@ function SkillsSection({ data, setData }) {
             </div>
           )},
         ]}
-        rows={data.skills} onEdit={open} onDelete={del}
+        rows={data.skills} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"skills",id,"up")} onMoveDown={id=>moveItemInArray(setData,"skills",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Skill":"Edit Skill"} onClose={close}>
@@ -1175,7 +1209,7 @@ function ProjectsSection({ data, setData }) {
           { key:"tech", label:"Stack", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
           { key:"github", label:"GitHub", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>↗</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
-        rows={data.projects} onEdit={open} onDelete={del}
+        rows={data.projects} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"projects",id,"up")} onMoveDown={id=>moveItemInArray(setData,"projects",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Project":"Edit Project"} onClose={close} wide>
@@ -1239,7 +1273,7 @@ function ExperienceSection({ data, setData }) {
           { key:"company_en", label:"Company" },
           { key:"period_en", label:"Period", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
         ]}
-        rows={data.experience} onEdit={open} onDelete={del}
+        rows={data.experience} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"experience",id,"up")} onMoveDown={id=>moveItemInArray(setData,"experience",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Experience":"Edit Experience"} onClose={close} wide>
@@ -1299,7 +1333,7 @@ function ReviewsSection({ data, setData }) {
           { key:"rating", label:"Rating", render:v=><Stars n={v} /> },
           { key:"comment_en", label:"Comment", render:v=><span style={{ fontSize:12,color:t.textSub }}>{v?.slice(0,50)}{v?.length>50?"…":""}</span> },
         ]}
-        rows={data.reviews} onEdit={open} onDelete={del}
+        rows={data.reviews} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"reviews",id,"up")} onMoveDown={id=>moveItemInArray(setData,"reviews",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Review":"Edit Review"} onClose={close} wide>
@@ -1360,7 +1394,7 @@ function RecsSection({ data, setData }) {
           { key:"title_en", label:"Title" },
           { key:"linkedin", label:"LinkedIn", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>Profile ↗</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
-        rows={data.recommendations} onEdit={open} onDelete={del}
+        rows={data.recommendations} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"recommendations",id,"up")} onMoveDown={id=>moveItemInArray(setData,"recommendations",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Recommendation":"Edit Recommendation"} onClose={close} wide>
@@ -1421,7 +1455,7 @@ function CertsSection({ data, setData }) {
           { key:"date", label:"Date", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
           { key:"badge", label:"Badge", render:v=><CategoryPill cat={v} /> },
         ]}
-        rows={data.certificates} onEdit={open} onDelete={del}
+        rows={data.certificates} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"certificates",id,"up")} onMoveDown={id=>moveItemInArray(setData,"certificates",id,"down")}
       />
       {modal&&(
         <Modal title={modal==="add"?"Add Certificate":"Edit Certificate"} onClose={close} wide>
@@ -1675,6 +1709,27 @@ CREATE TABLE recommendations (
   );
 }
 
+// ── SITE TEXT ─────────────────────────────────────────────────
+function SiteTextSection({ data, setData }) {
+  const [form, setForm] = useState(data.siteText || INITIAL.siteText);
+  const [lang, setLang] = useState("en");
+  const { toast } = useToast();
+  const t = useT();
+  const save = () => { setData(d => ({ ...d, siteText: form })); toast("Site text saved!", "success"); };
+  const updateHero = (key, value) => setForm(f => ({ ...f, hero: { ...f.hero, [key]: value } }));
+  const updateSection = (section, key, value) => setForm(f => ({ ...f, sections: { ...f.sections, [section]: { ...f.sections[section], [key]: value } } }));
+  const sectionKeys = ["about", "skills", "projects", "experience", "certificates", "reviews", "recommendations", "contact"];
+  return <div><SectionHeader title="Site Text" icon={I.text} count={sectionKeys.length + 1} langToggle={<LangToggle lang={lang} setLang={setLang} />} /><Card style={{ marginBottom: 16 }}><div style={{ fontSize:13,fontWeight:700,marginBottom:14,color:t.text }}>Home / Hero Text</div><div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}><Input label={lang === "en" ? "Hero Subtitle (EN)" : "العنوان الفرعي في الصفحة الرئيسية"} value={lang === "en" ? form.hero.subtitle_en : form.hero.subtitle_ar} isAr={lang === "ar"} onChange={e => updateHero(lang === "en" ? "subtitle_en" : "subtitle_ar", e.target.value)} /><Textarea label={lang === "en" ? "Hero Description (EN)" : "الوصف تحت الاسم في الصفحة الرئيسية"} value={lang === "en" ? form.hero.description_en : form.hero.description_ar} rows={3} isAr={lang === "ar"} onChange={e => updateHero(lang === "en" ? "description_en" : "description_ar", e.target.value)} /></div></Card><Card><div style={{ fontSize:13,fontWeight:700,marginBottom:14,color:t.text }}>Section Titles & Subtitles</div><div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14 }}>{sectionKeys.map(key => <div key={key} style={{ border:`1px solid ${t.border}`, borderRadius:12, padding:14 }}><div style={{ fontSize:12,fontWeight:800,textTransform:"uppercase",marginBottom:10,color:t.accent }}>{key}</div><Input label={lang === "en" ? "Title (EN)" : "العنوان (AR)"} value={lang === "en" ? form.sections[key].title_en : form.sections[key].title_ar} isAr={lang === "ar"} onChange={e => updateSection(key, lang === "en" ? "title_en" : "title_ar", e.target.value)} /><div style={{ height:10 }} /><Textarea label={lang === "en" ? "Subtitle (EN)" : "الوصف تحت العنوان (AR)"} value={lang === "en" ? form.sections[key].subtitle_en : form.sections[key].subtitle_ar} rows={3} isAr={lang === "ar"} onChange={e => updateSection(key, lang === "en" ? "subtitle_en" : "subtitle_ar", e.target.value)} /></div>)}</div><div style={{ display:"flex",justifyContent:"flex-end",marginTop:18 }}><Btn onClick={save}><Ic d={I.save} size={13} /> Save Site Text</Btn></div></Card></div>;
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function SettingsSection() {
+  const [oldPw, setOldPw] = useState(""); const [newPw1, setNewPw1] = useState(""); const [newPw2, setNewPw2] = useState("");
+  const { toast } = useToast(); const t = useT();
+  const save = e => { e.preventDefault(); if (oldPw !== _savedPw.current) { toast("Current password is wrong.", "error"); return; } if (newPw1.length < 6) { toast("New password must be at least 6 characters.", "error"); return; } if (newPw1 !== newPw2) { toast("Confirm password does not match.", "error"); return; } _savedPw.current = newPw1; setOldPw(""); setNewPw1(""); setNewPw2(""); toast("Password changed successfully!", "success"); };
+  return <div><SectionHeader title="Settings" icon={I.settings} /><Card style={{ maxWidth:520 }}><div style={{ fontSize:14,fontWeight:800,color:t.text,marginBottom:6 }}>Change Dashboard Password</div><p style={{ fontSize:12,color:t.textSub,lineHeight:1.6,marginBottom:16 }}>Password management is now inside the dashboard, not on the login screen.</p><form onSubmit={save} style={{ display:"flex",flexDirection:"column",gap:12 }}><Input type="password" label="Current Password" value={oldPw} onChange={e=>setOldPw(e.target.value)} /><Input type="password" label="New Password" value={newPw1} onChange={e=>setNewPw1(e.target.value)} /><Input type="password" label="Confirm New Password" value={newPw2} onChange={e=>setNewPw2(e.target.value)} /><div style={{ display:"flex",justifyContent:"flex-end",marginTop:8 }}><Btn type="submit"><Ic d={I.save} size={13} /> Save Password</Btn></div></form></Card></div>;
+}
+
 // ── LOGIN ─────────────────────────────────────────────────────
 // Stores current password in module-level ref so it persists across logout/login cycles
 const _savedPw = { current: "admin123" };
@@ -1762,7 +1817,7 @@ function LoginPage({ onLogin }) {
 
           {/* ── TAB BAR ── */}
           <div style={{ display:"flex",gap:4,marginBottom:22,background:t.surfaceEl,borderRadius:11,padding:3 }}>
-            {[["login","Sign In"],["change","Change Password"]].map(([id,lbl])=>(
+            {[["login","Sign In"]].map(([id,lbl])=>(
               <button key={id} onClick={()=>{setChanging(id==="change");setError("");setChgError("");setChgSuccess("");}}
                 style={{ flex:1,padding:"7px 0",borderRadius:9,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,transition:"all 0.15s",
                   background: (id==="change")===changing ? t.accent : "transparent",
@@ -1834,10 +1889,69 @@ function LoginPage({ onLogin }) {
   );
 }
 
+// ─── CMS PERSISTENCE / API SYNC ─────────────────────────────
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const STORAGE_KEY = "ahmed_portfolio_cms_data";
+
+function mergeSiteText(incomingSiteText = {}) {
+  const incomingSections = incomingSiteText.sections || {};
+  const mergedSections = {};
+  Object.keys(INITIAL.siteText.sections).forEach(key => {
+    mergedSections[key] = { ...INITIAL.siteText.sections[key], ...(incomingSections[key] || {}) };
+  });
+  return {
+    ...INITIAL.siteText,
+    ...incomingSiteText,
+    hero: { ...INITIAL.siteText.hero, ...(incomingSiteText.hero || {}) },
+    sections: mergedSections,
+  };
+}
+
+function normalizeCmsData(incoming) {
+  if (!incoming || typeof incoming !== "object") return INITIAL;
+  return {
+    ...INITIAL,
+    ...incoming,
+    about: { ...INITIAL.about, ...(incoming.about || {}), stats: { ...INITIAL.about.stats, ...(incoming.about?.stats || {}) } },
+    siteText: mergeSiteText(incoming.siteText),
+    skills: Array.isArray(incoming.skills) ? incoming.skills : INITIAL.skills,
+    projects: Array.isArray(incoming.projects) ? incoming.projects : INITIAL.projects,
+    experience: Array.isArray(incoming.experience) ? incoming.experience : INITIAL.experience,
+    reviews: Array.isArray(incoming.reviews) ? incoming.reviews : INITIAL.reviews,
+    recommendations: Array.isArray(incoming.recommendations) ? incoming.recommendations : INITIAL.recommendations,
+    certificates: Array.isArray(incoming.certificates) ? incoming.certificates : INITIAL.certificates,
+    links: Array.isArray(incoming.links) ? incoming.links : INITIAL.links,
+    social: Array.isArray(incoming.social) ? incoming.social : INITIAL.social,
+    contact: Array.isArray(incoming.contact) ? incoming.contact : INITIAL.contact,
+  };
+}
+
+async function publishCmsData(data) {
+  const normalized = normalizeCmsData(data);
+  const payload = JSON.stringify(normalized);
+  localStorage.setItem(STORAGE_KEY, payload);
+  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: normalized }));
+  const endpoints = [
+    { url: `${API_URL}/api/content`, options: { method: "PUT" } },
+    { url: `${API_URL}/api/seed`, options: { method: "POST" } },
+  ];
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint.url, { ...endpoint.options, headers: { "Content-Type": "application/json" }, body: payload });
+      if (res.ok) return true;
+      lastError = new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Publish failed");
+}
 // ─── NAV CONFIG ──────────────────────────────────────────────
 const NAV = [
   { id:"overview",        label:"Overview",        icon:I.dashboard,  group:"main" },
   { id:"about",           label:"About / Bio",     icon:I.about,      group:"content" },
+  { id:"siteText",        label:"Site Text",       icon:I.text,       group:"content" },
   { id:"skills",          label:"Skills",          icon:I.skills,     group:"content" },
   { id:"projects",        label:"Projects",        icon:I.projects,   group:"content" },
   { id:"experience",      label:"Experience",      icon:I.experience, group:"content" },
@@ -1847,55 +1961,58 @@ const NAV = [
   { id:"links",           label:"Links",           icon:I.links,      group:"meta" },
   { id:"social",          label:"Social Media",    icon:I.social,     group:"meta" },
   { id:"contact",         label:"Contact Info",    icon:I.contact,    group:"meta" },
+  { id:"settings",        label:"Settings",        icon:I.settings,   group:"dev" },
   { id:"seed",            label:"DB & Export",     icon:I.api,        group:"dev" },
 ];
 
 // ─── DASHBOARD SHELL ─────────────────────────────────────────
 function Dashboard({ onLogout }) {
   const [active, setActive] = useState("overview");
-  const [data, setData] = useState(INITIAL);
+  const [data, setData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? normalizeCmsData(JSON.parse(saved)) : INITIAL;
+    } catch {
+      return INITIAL;
+    }
+  });
   const [sideOpen, setSideOpen] = useState(false);
-  const [apiStatus, setApiStatus] = useState("connecting");
-  const loadedRef = useRef(false);
+  const [saveStatus, setSaveStatus] = useState("saved");
+  const [hydrated, setHydrated] = useState(false);
   const { dark, toggle } = useTheme();
   const t = useT();
-  const { toast } = useToast();
 
   useEffect(() => {
     let cancelled = false;
     fetch(`${API_URL}/api/content`)
-      .then(r => r.ok ? r.json() : Promise.reject(new Error("API failed")))
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
       .then(remote => {
-        if (cancelled) return;
-        if (remote && remote.about) setData(remote);
-        setApiStatus("connected");
+        if (!cancelled && remote && typeof remote === "object") {
+          setData(normalizeCmsData(remote));
+        }
       })
-      .catch(() => setApiStatus("offline"))
-      .finally(() => { loadedRef.current = true; });
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setHydrated(true);
+      });
     return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
-    if (!loadedRef.current) return;
+    if (!hydrated) return;
+    setSaveStatus("saving");
     const timer = setTimeout(() => {
-      fetch(`${API_URL}/api/content`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-        .then(r => r.ok ? r.json() : Promise.reject(new Error("Save failed")))
-        .then(() => setApiStatus("saved"))
-        .catch(() => {
-          setApiStatus("offline");
-          toast("Backend is offline. Portfolio will not update until the API is running.", "warn");
-        });
-    }, 450);
+      publishCmsData(data)
+        .then(() => setSaveStatus("saved"))
+        .catch(() => setSaveStatus("local"));
+    }, 650);
     return () => clearTimeout(timer);
-  }, [data, toast]);
+  }, [data, hydrated]);
 
   const sections = {
     overview:        <Overview data={data} />,
     about:           <AboutSection data={data} setData={setData} />,
+    siteText:        <SiteTextSection data={data} setData={setData} />,
     skills:          <SkillsSection data={data} setData={setData} />,
     projects:        <ProjectsSection data={data} setData={setData} />,
     experience:      <ExperienceSection data={data} setData={setData} />,
@@ -1905,6 +2022,7 @@ function Dashboard({ onLogout }) {
     links:           <LinksSection data={data} setData={setData} />,
     social:          <SocialSection data={data} setData={setData} />,
     contact:         <ContactSection data={data} setData={setData} />,
+    settings:        <SettingsSection />,
     seed:            <SeedPanel data={data} />,
   };
 
@@ -1982,14 +2100,14 @@ function Dashboard({ onLogout }) {
           </div>
           <div style={{ display:"flex",alignItems:"center",gap:8 }}>
             <div style={{ display:"flex",alignItems:"center",gap:5,background:t.successSoft,border:`1px solid ${t.success}30`,color:t.success,padding:"5px 10px",borderRadius:99,fontSize:11,fontWeight:700 }}>
-              <span style={{ width:6,height:6,borderRadius:"50%",background:t.success,display:"inline-block",boxShadow:`0 0 6px ${t.success}` }} />Online
+              <span style={{ width:6,height:6,borderRadius:"50%",background:saveStatus==="saving"?t.warn:t.success,display:"inline-block",boxShadow:`0 0 6px ${saveStatus==="saving"?t.warn:t.success}` }} />{saveStatus==="saving"?"Saving...":saveStatus==="local"?"Saved locally":"Published"}
             </div>
             <div style={{ display:"flex",alignItems:"center",gap:5,background:t.arSoft,border:`1px solid ${t.ar}30`,color:t.ar,padding:"5px 10px",borderRadius:99,fontSize:11,fontWeight:700,fontFamily:"'Cairo',sans-serif" }}>🌐 ثنائي</div>
             <div style={{ width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${t.accent},#7c3aed)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:750,color:"#fff" }}>A</div>
           </div>
         </header>
-        <main style={{ flex:1,overflowY:"auto",padding:"28px 32px" }}>
-          <div style={{ width:"100%" }}>
+        <main style={{ flex:1,overflowY:"auto",padding:"28px 32px",width:"100%" }}>
+          <div style={{ width:"100%",maxWidth:"none",margin:0 }}>
             {sections[active]}
           </div>
         </main>

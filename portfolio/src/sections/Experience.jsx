@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap } from 'lucide-react';
 import { useLang } from '../context/LangContext';
-import { useCms, cmsExperience } from '../context/CmsContext';
+import { useCms, cmsExperience, siteText } from '../context/CmsContext';
 
 const experienceData = {
   ar: [
@@ -26,6 +26,8 @@ export default function Experience() {
   const { t, lang } = useLang();
   const { data: cmsData } = useCms();
   const experience = cmsExperience(cmsData, lang, experienceData[lang]);
+  const experienceTitle = siteText(cmsData, 'experience', 'title', lang, t.experience.title);
+  const experienceSubtitle = siteText(cmsData, 'experience', 'subtitle', lang, '');
 
   return (
     <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8">
@@ -37,7 +39,8 @@ export default function Experience() {
           className="mb-16 text-center"
         >
           <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.experience.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white">{t.experience.title}</h2>
+          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{experienceTitle}</h2>
+          {experienceSubtitle && <p className="text-gray-500 dark:text-gray-500 max-w-lg mx-auto text-sm">{experienceSubtitle}</p>}
         </motion.div>
 
         <div className="relative">

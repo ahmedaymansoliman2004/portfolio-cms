@@ -1,16 +1,26 @@
 import { motion } from 'framer-motion';
 import { Code2, Database, BrainCircuit, BarChart3 } from 'lucide-react';
 import { useLang } from '../context/LangContext';
+import { useCms, siteText, cmsSkills } from '../context/CmsContext';
 
 export default function About() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { data: cmsData } = useCms();
 
-  const skillGroups = [
+  const fallbackSkillGroups = [
     { icon: BrainCircuit, label: t.about.skills.ml,       color: '#00E5FF', skills: ['TensorFlow', 'Scikit-learn', 'YOLOv8', 'OpenCV', 'NLP'] },
     { icon: Database,     label: t.about.skills.dataEng,  color: '#8B5CF6', skills: ['Python', 'SQL', 'ETL Pipelines', 'Azure', 'Pandas'] },
     { icon: BarChart3,    label: t.about.skills.analytics,color: '#22C55E', skills: ['Power BI', 'Matplotlib', 'Seaborn', 'Excel', 'Statistics'] },
     { icon: Code2,        label: t.about.skills.dev,      color: '#F59E0B', skills: ['Flask', 'Git', 'Jupyter', 'VS Code', 'Linux'] },
   ];
+
+  const iconMap = { BrainCircuit, Database, BarChart3, Code2 };
+  const skillGroups = cmsSkills(cmsData, fallbackSkillGroups, lang).map(group => ({
+    ...group,
+    icon: group.icon || iconMap[group.iconKey] || Code2,
+  }));
+  const aboutTitle = siteText(cmsData, 'about', 'title', lang, t.about.title);
+  const aboutSubtitle = siteText(cmsData, 'about', 'subtitle', lang, t.about.subtitle);
 
   const renderBio = (text) => {
     return text.split('<accent>').map((part, i) => {
@@ -35,8 +45,8 @@ export default function About() {
           className="mb-16 text-center"
         >
           <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.about.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{t.about.title}</h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">{t.about.subtitle}</p>
+          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{aboutTitle}</h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">{aboutSubtitle}</p>
         </motion.div>
 
         <div className={`grid lg:grid-cols-2 gap-12 items-start`}>
@@ -60,9 +70,9 @@ export default function About() {
 
               <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-white/10">
                 {[
-                  { value: '9+',   label: t.about.stats.projects },
-                  { value: '3.63', label: t.about.stats.gpa },
-                  { value: '2+',   label: t.about.stats.internships },
+                  { value: cmsData?.about?.stats?.projects || '9+',   label: t.about.stats.projects },
+                  { value: cmsData?.about?.stats?.gpa || '3.63', label: t.about.stats.gpa },
+                  { value: cmsData?.about?.stats?.internships || '2+',   label: t.about.stats.internships },
                 ].map(stat => (
                   <div key={stat.label} className="text-center">
                     <p className="font-display font-bold text-2xl text-accent">{stat.value}</p>

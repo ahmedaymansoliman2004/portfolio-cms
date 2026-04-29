@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Linkedin, Quote, GraduationCap, ExternalLink } from 'lucide-react';
 import { testimonials as fallbackTestimonials, recommendation as fallbackRecommendation } from '../data/testimonials';
-import { useCms, cmsTestimonials } from '../context/CmsContext';
+import { useCms, cmsTestimonials, siteText } from '../context/CmsContext';
 import TestimonialCard from '../components/TestimonialCard';
 import { useLang } from '../context/LangContext';
 
@@ -155,9 +155,11 @@ function RecommendationSection({ recommendation }) {
 }
 
 export default function Testimonials() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const { data: cmsData } = useCms();
   const { testimonials, recommendation } = cmsTestimonials(cmsData, fallbackTestimonials, fallbackRecommendation);
+  const testimonialsTitle = siteText(cmsData, 'reviews', 'title', lang, t.testimonials.title);
+  const testimonialsSubtitle = siteText(cmsData, 'reviews', 'subtitle', lang, t.testimonials.subtitle);
 
   return (
     <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-white/[0.02]">
@@ -169,8 +171,8 @@ export default function Testimonials() {
           className="mb-12 text-center"
         >
           <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.testimonials.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{t.testimonials.title}</h2>
-          <p className="text-gray-500 dark:text-gray-500 max-w-lg mx-auto">{t.testimonials.subtitle}</p>
+          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{testimonialsTitle}</h2>
+          <p className="text-gray-500 dark:text-gray-500 max-w-lg mx-auto">{testimonialsSubtitle}</p>
         </motion.div>
 
         {/* Testimonial grid */}
