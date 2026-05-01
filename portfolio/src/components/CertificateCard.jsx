@@ -14,7 +14,10 @@ export default function CertificateCard({ cert, index, onOpen }) {
   const { lang } = useLang();
   const title       = cert.title[lang];
   const type        = cert.type[lang];
-  const description = cert.description[lang];
+  const description = cert.description?.[lang] || '';
+  const issuer      = cert.issuer || cert.platform || '';
+  const date        = cert.date || cert.year || '';
+  const meta        = [issuer, date].filter(Boolean).join(' · ');
   const viewLabel   = lang === 'ar' ? 'عرض الشهادة' : 'View Certificate';
 
   return (
@@ -84,7 +87,7 @@ export default function CertificateCard({ cert, index, onOpen }) {
         {/* footer */}
         <div className="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-white/8 mt-auto">
           <span className="text-[11px] text-gray-400 dark:text-gray-600 font-mono">
-            {cert.platform} · {cert.year}
+            {meta}
           </span>
           <button
             onClick={() => onOpen(cert)}

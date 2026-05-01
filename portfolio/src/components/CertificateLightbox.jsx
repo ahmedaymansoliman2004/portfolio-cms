@@ -7,9 +7,12 @@ export default function CertificateLightbox({ cert, certs, onClose, onNavigate }
   const { lang, isRTL } = useLang();
   if (!cert) return null;
 
-  const title       = cert.title[lang];
-  const type        = cert.type[lang];
-  const description = cert.description[lang];
+  const title       = cert.title?.[lang] || '';
+  const type        = cert.type?.[lang] || cert.badge || '';
+  const description = cert.description?.[lang] || '';
+  const issuer      = cert.issuer || cert.platform || '';
+  const date        = cert.date || cert.year || '';
+  const meta        = [issuer, date].filter(Boolean).join(' · ');
 
   const currentIndex = certs.findIndex(c => c.id === cert.id);
   const hasPrev = currentIndex > 0;
@@ -131,7 +134,7 @@ export default function CertificateLightbox({ cert, certs, onClose, onNavigate }
                 {description}
               </p>
               <p className="text-[11px] text-gray-400 dark:text-gray-600 font-mono mt-2">
-                {cert.platform} · {cert.year}
+                {meta}
               </p>
             </div>
           </div>

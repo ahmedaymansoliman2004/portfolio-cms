@@ -177,26 +177,36 @@ export function cmsProjects(cmsData, fallback) {
 export function cmsCertificates(cmsData, fallback) {
   if (!cmsData?.certificates?.length) return fallback;
 
-  return cmsData.certificates.map((c) => ({
-    id: c.id,
-    title: {
-      ar: c.title_ar || c.title_en || '',
-      en: c.title_en || c.title_ar || '',
-    },
-    type: {
-      ar: c.badge || 'شهادة',
-      en: c.badge || 'Certificate',
-    },
-    description: {
-      ar: c.description_ar || c.description_en || c.description || '',
-      en: c.description_en || c.description_ar || c.description || '',
-    },
-    issuer: c.issuer || '',
-    date: c.date || '',
-    link: c.link || '',
-    image: c.image || '',
-    color: c.color || '#00E5FF',
-  }));
+  return cmsData.certificates.map((c) => {
+    const badge = c.badge || c.type?.en || c.type || 'Certificate';
+    const issuer = c.issuer || c.platform || '';
+    const date = c.date || c.year || '';
+
+    return {
+      id: c.id,
+      title: {
+        ar: c.title_ar || c.title?.ar || c.title_en || c.title?.en || '',
+        en: c.title_en || c.title?.en || c.title_ar || c.title?.ar || '',
+      },
+      type: {
+        ar: c.type?.ar || badge || 'شهادة',
+        en: c.type?.en || badge || 'Certificate',
+      },
+      badge,
+      description: {
+        ar: c.description_ar || c.description?.ar || c.description_en || c.description?.en || '',
+        en: c.description_en || c.description?.en || c.description_ar || c.description?.ar || '',
+      },
+      issuer,
+      date,
+      platform: issuer,
+      year: date,
+      link: c.link || '',
+      image: c.image || '',
+      icon: c.icon || '🏅',
+      color: c.color || '#00E5FF',
+    };
+  });
 }
 
 export function cmsTestimonials(cmsData, fallbackTestimonials, fallbackRecommendation) {

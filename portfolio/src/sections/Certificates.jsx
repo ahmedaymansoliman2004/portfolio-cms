@@ -25,9 +25,11 @@ export default function Certificates() {
     ? 'شهادات مهنية وورش عمل مكتملة في الذكاء الاصطناعي والبيانات والتكنولوجيا.'
     : 'Professional certifications, internships & workshops in AI, data, and technology.');
 
+  const normalizedBadge = (value) => String(value || '').trim().toLowerCase();
+
   const filtered = active === 'All'
     ? certificates
-    : certificates.filter(c => c.badge === active);
+    : certificates.filter(c => normalizedBadge(c.badge || c.type?.en) === normalizedBadge(active));
 
   const filterLabels = FILTERS[lang];
 
@@ -64,8 +66,11 @@ export default function Certificates() {
           {BADGE_KEYS.map((key, i) => {
             const label   = filterLabels[i];
             const isActive = active === key;
-            const cert     = certificates.find(c => c.badge === key);
+            const cert     = certificates.find(c => normalizedBadge(c.badge || c.type?.en) === normalizedBadge(key));
             const color    = cert?.color ?? 'var(--color-accent)';
+            const count    = key === 'All'
+              ? certificates.length
+              : certificates.filter(c => normalizedBadge(c.badge || c.type?.en) === normalizedBadge(key)).length;
             return (
               <button
                 key={key}
@@ -84,7 +89,7 @@ export default function Certificates() {
                 {label}
                 {key !== 'All' && (
                   <span className="ms-1.5 opacity-60">
-                    {certificates.filter(c => c.badge === key).length}
+                    {count}
                   </span>
                 )}
               </button>
