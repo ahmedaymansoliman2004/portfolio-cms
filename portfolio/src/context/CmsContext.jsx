@@ -71,7 +71,7 @@ function readLocalCmsData() {
 const CmsContext = createContext({ data: null, loading: true, refresh: () => {} });
 
 export function CmsProvider({ children }) {
-  const [data, setData] = useState(() => readLocalCmsData());
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = async () => {
@@ -82,7 +82,7 @@ export function CmsProvider({ children }) {
       const json = await res.json();
       const normalized = normalizeCmsData(json);
 
-      if (normalized && (normalized.about || normalized.projects?.length || normalized.siteText)) {
+      if (normalized) {
         setData(normalized);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
       }
