@@ -179,9 +179,18 @@ export function cmsCertificates(cmsData, fallback) {
 
   return cmsData.certificates.map((c) => ({
     id: c.id,
-    title: { ar: c.title_ar || c.title_en || '', en: c.title_en || c.title_ar || '' },
-    type: { ar: c.badge || 'شهادة', en: c.badge || 'Certificate' },
-    description: { ar: c.issuer || '', en: c.issuer || '' },
+    title: {
+      ar: c.title_ar || c.title_en || '',
+      en: c.title_en || c.title_ar || '',
+    },
+    type: {
+      ar: c.badge || 'شهادة',
+      en: c.badge || 'Certificate',
+    },
+    description: {
+      ar: c.description_ar || c.description_en || c.description || '',
+      en: c.description_en || c.description_ar || c.description || '',
+    },
     issuer: c.issuer || '',
     date: c.date || '',
     link: c.link || '',

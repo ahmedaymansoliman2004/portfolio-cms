@@ -480,14 +480,14 @@ const INITIAL = {
     { id:1, name:"Dr. Amal Mahmoud", name_ar:"د. أمل محمود", title_en:"Assistant Professor | Machine Learning · Deep Learning · NLP · Computer Vision · Generative AI", title_ar:"أستاذة مساعدة | تعلم الآلة · التعلم العميق · معالجة اللغات الطبيعية · رؤية الحاسوب", institution_en:"FGSSR – Cairo University", institution_ar:"كلية الدراسات العليا للبحوث الإحصائية – جامعة القاهرة", quote_en:"I had the pleasure of teaching Ahmed Soliman in the Data Analysis course, and I can confidently say that he is one of the most committed and talented students I've worked with.\n\nHis dedication to learning, punctuality in submitting assignments, and strong work ethics truly set him apart.\n\nI highly recommend Ahmed for any opportunity in the field of data analytics.", quote_ar:"كان لي شرف تدريس أحمد سليمان في مادة تحليل البيانات، ويسعدني أن أؤكد بكل ثقة أنه من أكثر الطلاب التزامًا وموهبةً الذين عملت معهم.\n\nتميّز بتفانيه في التعلم، والتزامه الكامل في تسليم المهام، وأخلاقياته العملية الرفيعة.\n\nأوصي بأحمد بشدة لأي فرصة في مجال تحليل البيانات.", linkedin:"https://www.linkedin.com/in/amal-mahmoud-phd-8574b988/", avatar:"" },
   ],
   certificates: [
-    { id:1, title_en:"Machine Learning Internship", title_ar:"تدريب تعلم الآلة", issuer:"Elevvo", date:"Mar 2026", badge:"Internship", link:"", image:"" },
-    { id:2, title_en:"Google Data Analyst Specialist", title_ar:"أخصائي تحليل بيانات Google", issuer:"DEPI · Egypt MCIT", date:"May 2025", badge:"DEPI", link:"", image:"" },
-    { id:3, title_en:"Business English Track", title_ar:"مسار الإنجليزية للأعمال", issuer:"DEPI · Egypt MCIT", date:"May 2025", badge:"DEPI", link:"", image:"" },
-    { id:4, title_en:"IT Internship – Networking & AI", title_ar:"تدريب تقنية المعلومات – شبكات وذكاء اصطناعي", issuer:"EncryptCore", date:"2024", badge:"Internship", link:"", image:"" },
-    { id:5, title_en:"Cyber Violence Workshop", title_ar:"ورشة العنف الإلكتروني", issuer:"MSA University", date:"2023", badge:"Workshop", link:"", image:"" },
-    { id:6, title_en:"Interviewing Skills Workshop", title_ar:"ورشة مهارات المقابلات", issuer:"MSA University – CLC", date:"Sep 2023", badge:"Workshop", link:"", image:"" },
-    { id:7, title_en:"Meet Your Expert", title_ar:"قابل خبيرك", issuer:"MSA University – CLC", date:"Dec 2023", badge:"Program", link:"", image:"" },
-    { id:8, title_en:"The Hour of Code", title_ar:"ساعة البرمجة", issuer:"Code.org", date:"2023", badge:"CS Basics", link:"", image:"" },
+    { id:1, title_en:"Machine Learning Internship", title_ar:"تدريب تعلم الآلة", description_en:"Successful completion of the 1-month Machine Learning Internship Program.", description_ar:"إتمام ناجح لبرنامج تدريب تعلم الآلة لمدة شهر واحد.", issuer:"Elevvo", date:"Mar 2026", badge:"Internship", link:"", image:"" },
+    { id:2, title_en:"Google Data Analyst Specialist", title_ar:"أخصائي تحليل بيانات Google", description_en:"Completed a specialized data analysis track covering spreadsheets, SQL, Python, and BI dashboards.", description_ar:"إتمام مسار متخصص في تحليل البيانات يشمل الجداول الإلكترونية، SQL، بايثون، ولوحات BI.", issuer:"DEPI · Egypt MCIT", date:"May 2025", badge:"DEPI", link:"", image:"" },
+    { id:3, title_en:"Business English Track", title_ar:"مسار الإنجليزية للأعمال", description_en:"Completed business English training focused on professional communication and workplace language skills.", description_ar:"إتمام تدريب اللغة الإنجليزية للأعمال مع التركيز على التواصل المهني ومهارات اللغة في بيئة العمل.", issuer:"DEPI · Egypt MCIT", date:"May 2025", badge:"DEPI", link:"", image:"" },
+    { id:4, title_en:"IT Internship – Networking & AI", title_ar:"تدريب تقنية المعلومات – شبكات وذكاء اصطناعي", description_en:"Practical IT internship covering networking fundamentals and AI-based system development.", description_ar:"تدريب عملي في تقنية المعلومات يشمل أساسيات الشبكات وتطوير أنظمة قائمة على الذكاء الاصطناعي.", issuer:"EncryptCore", date:"2024", badge:"Internship", link:"", image:"" },
+    { id:5, title_en:"Cyber Violence Workshop", title_ar:"ورشة العنف الإلكتروني", description_en:"Attended a workshop discussing cyber violence awareness, prevention, and safe digital behavior.", description_ar:"حضور ورشة حول الوعي بالعنف الإلكتروني وطرق الوقاية والسلوك الرقمي الآمن.", issuer:"MSA University", date:"2023", badge:"Workshop", link:"", image:"" },
+    { id:6, title_en:"Interviewing Skills Workshop", title_ar:"ورشة مهارات المقابلات", description_en:"Completed a workshop focused on interview preparation, communication, and employability skills.", description_ar:"إتمام ورشة تركز على الاستعداد للمقابلات، التواصل، ومهارات التوظيف.", issuer:"MSA University – CLC", date:"Sep 2023", badge:"Workshop", link:"", image:"" },
+    { id:7, title_en:"Meet Your Expert", title_ar:"قابل خبيرك", description_en:"Participated in a career development program connecting students with industry experts.", description_ar:"المشاركة في برنامج تطوير مهني يربط الطلاب بخبراء من سوق العمل.", issuer:"MSA University – CLC", date:"Dec 2023", badge:"Program", link:"", image:"" },
+    { id:8, title_en:"The Hour of Code", title_ar:"ساعة البرمجة", description_en:"Completed an introductory computer science activity focused on programming basics.", description_ar:"إتمام نشاط تمهيدي في علوم الحاسب يركز على أساسيات البرمجة.", issuer:"Code.org", date:"2023", badge:"CS Basics", link:"", image:"" },
   ],
   links: [
     { id:1, label:"GitHub", url:"https://github.com/ahmedaymansoliman2004" },
@@ -1431,7 +1431,18 @@ function RecsSection({ data, setData }) {
 }
 
 // ── CERTIFICATES ─────────────────────────────────────────────
-const blankCert = () => ({ id:++_id, title_en:"", title_ar:"", issuer:"", date:"", badge:"Certificate", link:"", image:"" });
+const blankCert = () => ({
+  id: ++_id,
+  title_en: "",
+  title_ar: "",
+  description_en: "",
+  description_ar: "",
+  issuer: "",
+  date: "",
+  badge: "Certificate",
+  link: "",
+  image: "",
+});
 const BADGE_OPTS = ["Certificate","Internship","DEPI","Workshop","Program","CS Basics","Bootcamp"];
 
 function CertsSection({ data, setData }) {
@@ -1440,7 +1451,7 @@ function CertsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankCert()); setModal(item?"edit":"add"); };
+  const open = (item=null) => { setForm(item ? { ...blankCert(), ...item } : blankCert()); setModal(item ? "edit" : "add"); };
   const close = () => setModal(null);
   const save = () => { setData(d=>({...d,certificates:modal==="add"?[...d.certificates,form]:d.certificates.map(c=>c.id===form.id?form:c)})); toast(modal==="add"?"Certificate added!":"Updated!","success"); close(); };
   const del = id => setData(d=>({...d,certificates:d.certificates.filter(c=>c.id!==id)}));
@@ -1466,6 +1477,7 @@ function CertsSection({ data, setData }) {
           <div style={{ display:"flex",justifyContent:"flex-end",marginBottom:12 }}><LangToggle lang={lang} setLang={setLang} /></div>
           <div style={{ display:"flex",flexDirection:"column",gap:12 }}>
             <BiInputPair labelEn="Title (EN)" labelAr="العنوان (AR)" valEn={form.title_en} valAr={form.title_ar} onChangeEn={e=>setForm(f=>({...f,title_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,title_ar:e.target.value}))} lang={lang} />
+            <BiInputPair labelEn="Description (EN)" labelAr="الوصف (AR)" valEn={form.description_en || ""} valAr={form.description_ar || ""} onChangeEn={e=>setForm(f=>({...f,description_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,description_ar:e.target.value}))} multiline rows={3} lang={lang} />
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
               <Input label="Issuer / Platform" value={form.issuer} onChange={e=>setForm(f=>({...f,issuer:e.target.value}))} />
               <Input label="Date" placeholder="May 2025" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))} />
