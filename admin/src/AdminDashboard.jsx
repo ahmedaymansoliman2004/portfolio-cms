@@ -73,13 +73,20 @@ function SingleImageUploader({ value, onChange, label, hint, shape="rect" }) {
   const inputRef = useRef(null);
   const [drag, setDrag] = useState(false);
   const [hov, setHov] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const isAvatar = shape === "avatar";
 
-  const readFile = file => {
+  const readFile = async file => {
     if (!file || !file.type.startsWith("image/")) return;
-    const r = new FileReader();
-    r.onload = e => onChange(e.target.result);
-    r.readAsDataURL(file);
+    try {
+      setUploading(true);
+      const url = await uploadImageFile(file);
+      onChange(url);
+    } catch (err) {
+      alert(err.message || "Image upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
   const onDrop = e => { e.preventDefault(); setDrag(false); readFile(e.dataTransfer.files[0]); };
   const onPick = e => { readFile(e.target.files[0]); e.target.value = ""; };
@@ -132,8 +139,8 @@ function SingleImageUploader({ value, onChange, label, hint, shape="rect" }) {
               {isAvatar ? "Current profile photo" : "Current image"} — click <strong style={{color:t.text}}>Replace</strong> to upload a new one from your PC, or <strong style={{color:t.danger}}>Remove</strong> to clear it.
             </div>
             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-              <Btn size="sm" onClick={() => inputRef.current?.click()}>
-                <Ic d={I.upload} size={12} /> Replace image
+              <Btn size="sm" disabled={uploading} onClick={() => inputRef.current?.click()}>
+                <Ic d={I.upload} size={12} /> {uploading ? "Uploading..." : "Replace image"}
               </Btn>
               <Btn size="sm" variant="danger" onClick={() => onChange("")}>
                 <Ic d={I.trash} size={12} /> Remove
@@ -184,7 +191,7 @@ function SingleImageUploader({ value, onChange, label, hint, shape="rect" }) {
             <Ic d={drag ? I.image : I.upload} size={22} />
           </div>
           <div style={{ textAlign:"center" }}>
-            <div style={{ fontSize:13, fontWeight:700, color:t.text }}>{drag ? "Drop image here" : "Click or drag & drop"}</div>
+            <div style={{ fontSize:13, fontWeight:700, color:t.text }}>{uploading ? "Uploading..." : drag ? "Drop image here" : "Click or drag & drop"}</div>
             <div style={{ fontSize:11, color:t.textMut, marginTop:3 }}>PNG · JPG · WEBP · max 10 MB</div>
           </div>
         </div>
@@ -206,30 +213,27 @@ function MultiImageUploader({ images=[], onChange, label, hint }) {
   const [dragIdx,  setDragIdx]  = useState(null);
   const [overIdx,  setOverIdx]  = useState(null);
   const [editIdx,  setEditIdx]  = useState(null); // which card is being replaced
+  const [uploading, setUploading] = useState(false);
 
-  /* ── read multiple new files and append ── */
-  const readFiles = (files, replaceAt=null) => {
+  /* ── upload multiple new files and append Cloudinary URLs ── */
+  const readFiles = async (files, replaceAt=null) => {
     const arr = [...files].filter(f => f.type.startsWith("image/"));
     if (!arr.length) return;
-    const results = [];
-    let done = 0;
-    arr.forEach((file, i) => {
-      const r = new FileReader();
-      r.onload = e => {
-        results[i] = e.target.result;
-        done++;
-        if (done !== arr.length) return;
-        if (replaceAt !== null) {
-          // replace single card
-          const next = [...images];
-          next[replaceAt] = results[0];
-          onChange(next);
-        } else {
-          onChange([...images, ...results.filter(Boolean)]);
-        }
-      };
-      r.readAsDataURL(file);
-    });
+    try {
+      setUploading(true);
+      const urls = await Promise.all(arr.map(file => uploadImageFile(file)));
+      if (replaceAt !== null) {
+        const next = [...images];
+        next[replaceAt] = urls[0];
+        onChange(next);
+      } else {
+        onChange([...images, ...urls.filter(Boolean)]);
+      }
+    } catch (err) {
+      alert(err.message || "Image upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const onAddPick     = e => { readFiles(e.target.files);             e.target.value = ""; };
@@ -372,7 +376,7 @@ function MultiImageUploader({ images=[], onChange, label, hint }) {
         </div>
         <div style={{ textAlign:"center" }}>
           <div style={{ fontSize:13, fontWeight:700, color:t.text }}>
-            {dropDrag ? "Drop images here" : images.length ? "Add more images" : "Click or drag & drop images"}
+            {uploading ? "Uploading..." : dropDrag ? "Drop images here" : images.length ? "Add more images" : "Click or drag & drop images"}
           </div>
           <div style={{ fontSize:11, color:t.textMut, marginTop:3 }}>PNG · JPG · WEBP · select multiple at once · max 10 MB each</div>
         </div>
@@ -1926,26 +1930,85 @@ function normalizeCmsData(incoming) {
   };
 }
 
-async function publishCmsData(data) {
-  const normalized = normalizeCmsData(data);
-  const payload = JSON.stringify(normalized);
-  localStorage.setItem(STORAGE_KEY, payload);
-  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: normalized }));
-  const endpoints = [
-    { url: `${API_URL}/api/content`, options: { method: "PUT" } },
-    { url: `${API_URL}/api/seed`, options: { method: "POST" } },
-  ];
-  let lastError = null;
-  for (const endpoint of endpoints) {
-    try {
-      const res = await fetch(endpoint.url, { ...endpoint.options, headers: { "Content-Type": "application/json" }, body: payload });
-      if (res.ok) return true;
-      lastError = new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      lastError = err;
-    }
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error("Could not read image file"));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadImageDataUrl(dataUrl) {
+  const res = await fetch(`${API_URL}/api/upload-image`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: dataUrl, folder: "portfolio-cms" }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Cloudinary upload failed: ${res.status} ${text}`);
   }
-  throw lastError || new Error("Publish failed");
+
+  const json = await res.json();
+  if (!json.url) throw new Error("Cloudinary did not return an image URL");
+  return json.url;
+}
+
+async function uploadImageFile(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  return uploadImageDataUrl(dataUrl);
+}
+
+async function replaceEmbeddedImages(value, cache = new Map()) {
+  if (typeof value === "string") {
+    if (!value.startsWith("data:image/")) return value;
+    if (cache.has(value)) return cache.get(value);
+    const uploadedUrl = await uploadImageDataUrl(value);
+    cache.set(value, uploadedUrl);
+    return uploadedUrl;
+  }
+
+  if (Array.isArray(value)) {
+    return Promise.all(value.map(item => replaceEmbeddedImages(item, cache)));
+  }
+
+  if (value && typeof value === "object") {
+    const next = {};
+    for (const [key, val] of Object.entries(value)) {
+      next[key] = await replaceEmbeddedImages(val, cache);
+    }
+    return next;
+  }
+
+  return value;
+}
+
+async function publishCmsData(data) {
+  const normalized = await replaceEmbeddedImages(normalizeCmsData(data));
+  const payload = JSON.stringify(normalized);
+
+  try {
+    localStorage.setItem(STORAGE_KEY, payload);
+  } catch (err) {
+    console.warn("Local storage save skipped:", err.message);
+  }
+
+  const res = await fetch(`${API_URL}/api/content`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Publish failed: ${res.status} ${text}`);
+  }
+
+  const updated = await res.json().catch(() => normalized);
+  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: updated }));
+  return true;
 }
 // ─── NAV CONFIG ──────────────────────────────────────────────
 const NAV = [
