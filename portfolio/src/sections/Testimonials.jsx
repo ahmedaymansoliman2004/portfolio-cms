@@ -1,190 +1,317 @@
-import { motion } from 'framer-motion';
-import { Linkedin, Quote, GraduationCap, ExternalLink } from 'lucide-react';
-import { testimonials as fallbackTestimonials, recommendation as fallbackRecommendation } from '../data/testimonials';
-import { useCms, cmsTestimonials, siteText } from '../context/CmsContext';
-import TestimonialCard from '../components/TestimonialCard';
-import { useLang } from '../context/LangContext';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-function RecommendationSection({ recommendation }) {
-  const { lang, t } = useLang();
-  const rec = recommendation || fallbackRecommendation;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const STORAGE_KEY = 'ahmed_portfolio_cms_data';
 
-  const prof = rec.professor
-    ? rec.professor
-    : {
-        name: rec.name?.en || rec.name || '',
-        nameAr: rec.name?.ar || rec.nameAr || rec.name || '',
-        title: rec.title || { ar: '', en: '' },
-        institution: rec.institution || { ar: '', en: '' },
-        linkedin: rec.linkedin || '',
-        followers: rec.followers || '',
-        avatar: rec.avatar || '',
-      };
+const DEFAULT_SITE_TEXT = {
+  hero: {
+    subtitle_en: '',
+    subtitle_ar: '',
+    description_en: '',
+    description_ar: '',
+  },
+  sections: {
+    about: { title_en: 'About', title_ar: 'نبذة عني', subtitle_en: '', subtitle_ar: '' },
+    skills: { title_en: 'Skills', title_ar: 'المهارات', subtitle_en: '', subtitle_ar: '' },
+    projects: { title_en: 'Projects', title_ar: 'المشاريع', subtitle_en: '', subtitle_ar: '' },
+    experience: { title_en: 'Experience', title_ar: 'الخبرات', subtitle_en: '', subtitle_ar: '' },
+    certificates: { title_en: 'Certifications', title_ar: 'الشهادات', subtitle_en: '', subtitle_ar: '' },
+    reviews: { title_en: 'Reviews', title_ar: 'آراء العملاء', subtitle_en: '', subtitle_ar: '' },
+    recommendations: { title_en: 'Recommendations', title_ar: 'التوصيات', subtitle_en: '', subtitle_ar: '' },
+    contact: { title_en: 'Contact', title_ar: 'تواصل معي', subtitle_en: '', subtitle_ar: '' },
+  },
+};
 
-  const quoteSource = rec.quote || {};
-  const quoteText = typeof quoteSource === 'string'
-    ? quoteSource
-    : (quoteSource[lang] || quoteSource.en || quoteSource.ar || '');
-  const paragraphs = String(quoteText).split('\n\n').filter(Boolean);
+function mergeSiteText(incomingSiteText = {}) {
+  const incomingSections = incomingSiteText.sections || {};
+  const mergedSections = {};
 
-  // Key phrases to highlight
-  const highlights = {
-    ar: ['أكثر الطلاب التزامًا وموهبةً', 'تفانيه في التعلم', 'فهمًا عميقًا', 'أوصي بأحمد بشدة'],
-    en: ['most committed and talented', 'dedication to learning', 'deep understanding', 'highly recommend Ahmed'],
+  Object.keys(DEFAULT_SITE_TEXT.sections).forEach((key) => {
+    mergedSections[key] = {
+      ...DEFAULT_SITE_TEXT.sections[key],
+      ...(incomingSections[key] || {}),
+    };
+  });
+
+  return {
+    ...DEFAULT_SITE_TEXT,
+    ...incomingSiteText,
+    hero: {
+      ...DEFAULT_SITE_TEXT.hero,
+      ...(incomingSiteText.hero || {}),
+    },
+    sections: mergedSections,
   };
-
-  const highlightText = (text) => {
-    const phrases = highlights[lang];
-    let result = text;
-    // We'll render with spans by splitting
-    let parts = [text];
-    phrases.forEach(phrase => {
-      parts = parts.flatMap(part => {
-        if (typeof part !== 'string') return [part];
-        const idx = part.indexOf(phrase);
-        if (idx === -1) return [part];
-        return [
-          part.slice(0, idx),
-          <mark key={phrase} className="bg-accent/15 text-accent dark:text-accent px-0.5 rounded not-italic font-semibold" style={{ background: 'rgba(0,229,255,0.12)' }}>{phrase}</mark>,
-          part.slice(idx + phrase.length),
-        ];
-      });
-    });
-    return parts;
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="mt-16"
-    >
-      {/* Section label */}
-      <div className="flex items-center gap-3 mb-6 justify-center">
-        <div className="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-accent/30" />
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/8 border border-accent/20">
-          <GraduationCap size={13} className="text-accent" />
-          <span className="text-xs font-mono text-accent tracking-wider">{t.testimonials.recommendationLabel}</span>
-        </div>
-        <div className="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-accent/30" />
-      </div>
-
-      {/* Card */}
-      <div className="relative card-glass rounded-2xl overflow-hidden border-accent/20">
-        {/* Top accent bar */}
-        <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent" />
-
-        <div className="p-8 sm:p-10">
-          {/* Professor info */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-white/10">
-            {/* Avatar */}
-            <div className="relative flex-shrink-0">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center">
-                <span className="font-display font-bold text-xl text-white">AM</span>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">in</span>
-              </div>
-            </div>
-
-            <div className={`flex-1 text-start`}>
-              <a
-                href={prof.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 group"
-              >
-                <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white group-hover:text-accent transition-colors">
-                  {lang === 'ar' ? prof.nameAr : prof.name}
-                </h3>
-                <ExternalLink size={13} className="text-gray-400 group-hover:text-accent transition-colors" />
-              </a>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-lg">
-                {prof.title[lang]}
-              </p>
-              <p className="text-xs font-mono text-accent/70 mt-1">{prof.institution[lang]}</p>
-            </div>
-
-            {/* Followers badge */}
-            <div className={`flex-shrink-0 text-center sm:ms-auto`}>
-              <div className="px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <p className="font-display font-bold text-lg text-blue-500">{prof.followers}</p>
-                <p className="text-xs font-mono text-blue-400/70">LinkedIn</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quote */}
-          <div className="relative">
-            {/* Decorative quote mark */}
-            <Quote
-              size={48}
-              className={`absolute opacity-8 text-accent inset-inline-start-0 top-0`}
-              style={{ opacity: 0.07 }}
-            />
-
-            <div className="space-y-4 ps-8 sm:ps-12">
-              {paragraphs.map((para, i) => (
-                <p
-                  key={i}
-                  className={`text-gray-600 dark:text-gray-300 leading-relaxed ${
-                    i === paragraphs.length - 1
-                      ? 'font-semibold text-gray-800 dark:text-white text-base'
-                      : 'text-sm'
-                  }`}
-                >
-                  {highlightText(para)}
-                </p>
-              ))}
-            </div>
-
-            {/* Closing quote */}
-            <div className="mt-6 flex justify-end">
-              <div className="flex items-center gap-2 text-xs font-mono text-gray-400 dark:text-gray-600">
-                <span>—</span>
-                <span>{lang === 'ar' ? prof.nameAr : prof.name}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
 }
 
-export default function Testimonials() {
-  const { t, lang } = useLang();
-  const { data: cmsData } = useCms();
-  const { testimonials, recommendation } = cmsTestimonials(cmsData, fallbackTestimonials, fallbackRecommendation);
-  const testimonialsTitle = siteText(cmsData, 'reviews', 'title', lang, t.testimonials.title);
-  const testimonialsSubtitle = siteText(cmsData, 'reviews', 'subtitle', lang, t.testimonials.subtitle);
+function normalizeCmsData(incoming) {
+  if (!incoming || typeof incoming !== 'object') return null;
 
-  return (
-    <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-white/[0.02]">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-12 text-center"
-        >
-          <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">{t.testimonials.label}</p>
-          <h2 className="section-heading text-gray-900 dark:text-white mb-4">{testimonialsTitle}</h2>
-          <p className="text-gray-500 dark:text-gray-500 max-w-lg mx-auto">{testimonialsSubtitle}</p>
-        </motion.div>
+  return {
+    ...incoming,
+    siteText: mergeSiteText(incoming.siteText),
+    skills: Array.isArray(incoming.skills) ? incoming.skills : [],
+    projects: Array.isArray(incoming.projects) ? incoming.projects : [],
+    experience: Array.isArray(incoming.experience) ? incoming.experience : [],
+    reviews: Array.isArray(incoming.reviews) ? incoming.reviews : [],
+    recommendations: Array.isArray(incoming.recommendations) ? incoming.recommendations : [],
+    certificates: Array.isArray(incoming.certificates) ? incoming.certificates : [],
+  };
+}
 
-        {/* Testimonial grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {testimonials.map((t, i) => (
-            <TestimonialCard key={t.id} testimonial={t} index={i} />
-          ))}
-        </div>
+function readLocalCmsData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? normalizeCmsData(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
+}
 
-        {/* Academic Recommendation */}
-        <RecommendationSection recommendation={recommendation} />
-      </div>
-    </section>
-  );
+const CmsContext = createContext({ data: null, loading: true, refresh: () => {} });
+
+export function CmsProvider({ children }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/content`, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const json = await res.json();
+      const normalized = normalizeCmsData(json);
+
+      if (normalized) {
+        setData(normalized);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+      }
+    } catch {
+      const localData = readLocalCmsData();
+      if (localData) setData(localData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    const safeRefresh = async () => {
+      if (!active) return;
+      await refresh();
+    };
+
+    safeRefresh();
+
+    const onFocus = () => safeRefresh();
+    const onVisibility = () => {
+      if (!document.hidden) safeRefresh();
+    };
+    const onStorage = (event) => {
+      if (event.key === STORAGE_KEY && event.newValue) {
+        try {
+          setData(normalizeCmsData(JSON.parse(event.newValue)));
+        } catch {}
+      }
+    };
+    const onCmsUpdated = (event) => {
+      if (event.detail) setData(normalizeCmsData(event.detail));
+    };
+
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('portfolio-cms-updated', onCmsUpdated);
+
+    const interval = window.setInterval(safeRefresh, 15000);
+
+    return () => {
+      active = false;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('portfolio-cms-updated', onCmsUpdated);
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  const value = useMemo(() => ({ data, loading, refresh }), [data, loading]);
+  return <CmsContext.Provider value={value}>{children}</CmsContext.Provider>;
+}
+
+export function useCms() {
+  return useContext(CmsContext);
+}
+
+export function localized(item, field, lang) {
+  return item?.[`${field}_${lang}`] ?? item?.[field]?.[lang] ?? item?.[field] ?? '';
+}
+
+export function siteText(cmsData, section, field, lang, fallback = '') {
+  const text = section === 'hero'
+    ? cmsData?.siteText?.hero?.[`${field}_${lang}`]
+    : cmsData?.siteText?.sections?.[section]?.[`${field}_${lang}`];
+
+  return text || fallback;
+}
+
+export function cmsProjects(cmsData, fallback) {
+  if (!cmsData?.projects?.length) return fallback;
+
+  return cmsData.projects.map((p) => ({
+    id: p.id,
+    title: { ar: p.title_ar || p.title_en || '', en: p.title_en || p.title_ar || '' },
+    description: { ar: p.description_ar || p.description_en || '', en: p.description_en || p.description_ar || '' },
+    shortDesc: { ar: p.description_ar || p.description_en || '', en: p.description_en || p.description_ar || '' },
+    tech: Array.isArray(p.tech) ? p.tech : String(p.tech || '').split(',').map((x) => x.trim()).filter(Boolean),
+    github: p.github || '',
+    live: p.live || null,
+    category: p.category || 'Machine Learning',
+    categoryAr: p.category_ar || p.categoryAr || p.category || '',
+    color: p.color || '#00E5FF',
+    images: Array.isArray(p.images) ? p.images : [],
+  }));
+}
+
+export function cmsCertificates(cmsData, fallback) {
+  if (!cmsData?.certificates?.length) return fallback;
+
+  return cmsData.certificates.map((c) => {
+    const badge = c.badge || c.type || 'Certificate';
+    const issuer = c.issuer || c.platform || '';
+    const date = c.date || c.year || '';
+
+    return {
+      id: c.id,
+      title: {
+        ar: c.title_ar || c.title_en || '',
+        en: c.title_en || c.title_ar || '',
+      },
+      type: {
+        ar: badge,
+        en: badge,
+      },
+      badge,
+      description: {
+        ar: c.description_ar || c.description_en || c.description || '',
+        en: c.description_en || c.description_ar || c.description || '',
+      },
+      issuer,
+      date,
+      platform: issuer,
+      year: date,
+      link: c.link || '',
+      image: c.image || '',
+      color: c.color || '#00E5FF',
+      icon: c.icon || '🏆',
+    };
+  });
+}
+
+export function cmsTestimonials(cmsData, fallbackTestimonials, fallbackRecommendation) {
+  const testimonialColors = ['#00E5FF', '#22C55E', '#8B5CF6', '#F59E0B', '#EC4899'];
+
+  const testimonials = cmsData?.reviews?.length
+    ? cmsData.reviews.map((r, index) => {
+        const comment = {
+          ar: r.comment_ar || r.comment_en || '',
+          en: r.comment_en || r.comment_ar || '',
+        };
+
+        return {
+          id: r.id,
+          name: r.name || '',
+          platform: r.platform || '',
+          service: {
+            ar: r.service_ar || r.service_en || '',
+            en: r.service_en || r.service_ar || '',
+          },
+          comment,
+          quote: comment,
+          rating: Number(r.rating || 5),
+          link: r.link || '',
+          avatar: r.avatar || '',
+          color: r.color || testimonialColors[index % testimonialColors.length],
+        };
+      })
+    : fallbackTestimonials;
+
+  const src = cmsData?.recommendations?.[0];
+  const recommendation = src
+    ? {
+        name: { ar: src.name_ar || src.name || '', en: src.name || src.name_ar || '' },
+        title: { ar: src.title_ar || '', en: src.title_en || '' },
+        institution: { ar: src.institution_ar || '', en: src.institution_en || '' },
+        quote: { ar: src.quote_ar || '', en: src.quote_en || '' },
+        linkedin: src.linkedin || '',
+        avatar: src.avatar || '',
+      }
+    : fallbackRecommendation;
+
+  return { testimonials, recommendation };
+}
+
+export function cmsExperience(cmsData, lang, fallback) {
+  if (!cmsData?.experience?.length) return fallback;
+
+  return cmsData.experience.map((e) => ({
+    role: localized(e, 'role', lang),
+    company: localized(e, 'company', lang),
+    period: localized(e, 'period', lang),
+    type: e.type || 'work',
+    bullets: String(localized(e, 'bullets', lang)).split('\n').filter(Boolean),
+    color: e.color || '#00E5FF',
+  }));
+}
+
+export function cmsSkills(cmsData, fallbackGroups, lang) {
+  if (!cmsData?.skills?.length) return fallbackGroups;
+
+  const iconMap = {
+    ML: 'BrainCircuit',
+    'Data Eng': 'Database',
+    Analytics: 'BarChart3',
+    Dev: 'Code2',
+    CV: 'BrainCircuit',
+    NLP: 'BrainCircuit',
+    Other: 'Code2',
+  };
+  const colorMap = {
+    ML: '#00E5FF',
+    'Data Eng': '#8B5CF6',
+    Analytics: '#22C55E',
+    Dev: '#F59E0B',
+    CV: '#8B5CF6',
+    NLP: '#00E5FF',
+    Other: '#F59E0B',
+  };
+  const labels = {
+    ML: { en: 'Machine Learning', ar: 'تعلم الآلة' },
+    'Data Eng': { en: 'Data Engineering', ar: 'هندسة البيانات' },
+    Analytics: { en: 'Analytics', ar: 'تحليلات البيانات' },
+    Dev: { en: 'Development', ar: 'التطوير' },
+    CV: { en: 'Computer Vision', ar: 'رؤية الحاسوب' },
+    NLP: { en: 'NLP', ar: 'معالجة اللغة' },
+    Other: { en: 'Other', ar: 'أخرى' },
+  };
+
+  const groups = [];
+  cmsData.skills.forEach((skill) => {
+    const cat = skill.category || 'Other';
+    let group = groups.find((g) => g.category === cat);
+    if (!group) {
+      group = {
+        category: cat,
+        iconKey: iconMap[cat] || 'Code2',
+        label: labels[cat]?.[lang] || cat,
+        color: colorMap[cat] || '#00E5FF',
+        skills: [],
+      };
+      groups.push(group);
+    }
+    group.skills.push(skill[`name_${lang}`] || skill.name_en || skill.name_ar || '');
+  });
+
+  return groups;
 }
