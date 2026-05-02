@@ -1192,7 +1192,7 @@ function SkillsSection({ data, setData }) {
 }
 
 // ── PROJECTS ─────────────────────────────────────────────────
-const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", category:"Machine Learning", color:"#818cf8" });
+const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", video:"", video_url:"", category:"Machine Learning", color:"#818cf8" });
 
 function ProjectsSection({ data, setData }) {
   const [modal, setModal] = useState(null);
@@ -1284,6 +1284,7 @@ function ProjectsSection({ data, setData }) {
           { key:"category", label:"Category", render:v=><CategoryPill cat={v} /> },
           { key:"tech", label:"Stack", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
           { key:"github", label:"GitHub", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>↗</a>:<span style={{ color:t.textMut }}>—</span> },
+          { key:"video", label:"Video", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>▶</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
         rows={data.projects} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"projects",id,"up")} onMoveDown={id=>moveItemInArray(setData,"projects",id,"down")}
       />
@@ -1301,6 +1302,13 @@ function ProjectsSection({ data, setData }) {
               <Input label="GitHub URL" type="url" value={form.github} onChange={e=>setForm(f=>({...f,github:e.target.value}))} />
               <Input label="Live URL" type="url" value={form.live} onChange={e=>setForm(f=>({...f,live:e.target.value}))} />
             </div>
+            <Input
+              label="Project Video URL"
+              hint="YouTube, Vimeo, or direct MP4/WebM URL"
+              type="url"
+              value={form.video || form.video_url || ""}
+              onChange={e=>setForm(f=>({...f,video:e.target.value,video_url:e.target.value}))}
+            />
             <Field label="Accent Color">
               <div style={{ display:"flex",alignItems:"center",gap:10 }}>
                 <input type="color" value={form.color} onChange={e=>setForm(f=>({...f,color:e.target.value}))} style={{ width:44,height:44,borderRadius:10,border:`1px solid ${t.border}`,cursor:"pointer",background:"none",padding:2 }} />

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, PlayCircle } from 'lucide-react';
 import { useLang } from '../context/LangContext';
 
 export default function ProjectCard({ project, onClick, index }) {
@@ -7,6 +7,7 @@ export default function ProjectCard({ project, onClick, index }) {
   const title    = typeof project.title    === 'object' ? project.title[lang]    : project.title;
   const shortDesc= typeof project.shortDesc=== 'object' ? project.shortDesc[lang]: project.shortDesc;
   const category = lang === 'ar' ? (project.categoryAr || project.category) : project.category;
+  const hasVideo = Boolean(project.video || project.video_url || project.videoUrl);
 
   return (
     <motion.div
@@ -34,6 +35,12 @@ export default function ProjectCard({ project, onClick, index }) {
             {category}
           </span>
         </div>
+        {hasVideo && (
+          <div className="absolute bottom-3 start-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+            <PlayCircle size={13} />
+            {lang === 'ar' ? 'فيديو' : 'Video'}
+          </div>
+        )}
         <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white">
             <ArrowUpRight size={16} />

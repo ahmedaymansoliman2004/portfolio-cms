@@ -62,7 +62,7 @@ export default function Projects() {
             className={`px-4 py-2 rounded-full text-xs font-mono font-medium transition-all duration-200 ${
               filterKey === ALL_KEY
                 ? 'bg-accent text-[#0A0E1A] shadow-lg shadow-accent/20'
-                : 'bg-gray-100 dark:bg-white/8 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15'
+                : 'border border-gray-200 bg-white/80 text-gray-600 hover:border-accent/40 hover:bg-accent/5 hover:text-gray-900 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-300 dark:hover:border-accent/50 dark:hover:bg-accent/10 dark:hover:text-white'
             }`}
           >
             {allLabel}
