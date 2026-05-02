@@ -81,9 +81,24 @@ function RecommendationSection({ recommendation }) {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-white/10">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center">
-                <span className="font-display font-bold text-xl text-white">AM</span>
-              </div>
+              {prof.avatar ? (
+                <img
+                  src={prof.avatar}
+                  alt={lang === 'ar' ? prof.nameAr : prof.name}
+                  className="w-14 h-14 rounded-2xl object-cover border border-accent/20"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center">
+                  <span className="font-display font-bold text-xl text-white">
+                    {(lang === 'ar' ? prof.nameAr : prof.name)
+                      ?.split(' ')
+                      .map(word => word[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase() || 'AM'}
+                  </span>
+                </div>
+              )}
               <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
                 <span className="text-white text-xs font-bold">in</span>
               </div>
