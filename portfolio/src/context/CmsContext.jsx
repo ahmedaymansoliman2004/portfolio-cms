@@ -258,6 +258,16 @@ export function cmsSkills(cmsData, fallbackGroups, lang) {
   if (!cmsData?.skills?.length) return fallbackGroups;
 
   const iconMap = {
+    'Programming & Data Tools': 'Code2',
+    'Data Analysis & Visualization': 'BarChart3',
+    'Business Intelligence': 'BarChart3',
+    'Machine Learning': 'BrainCircuit',
+    'Deep Learning & Computer Vision': 'BrainCircuit',
+    'Databases & Data Modeling': 'Database',
+    'Business Analytics': 'BarChart3',
+    'Application Development': 'Code2',
+    'Leadership & Project Management': 'Code2',
+    'Soft Skills': 'Code2',
     ML: 'BrainCircuit',
     'Data Eng': 'Database',
     Analytics: 'BarChart3',
@@ -266,40 +276,72 @@ export function cmsSkills(cmsData, fallbackGroups, lang) {
     NLP: 'BrainCircuit',
     Other: 'Code2',
   };
+
   const colorMap = {
-    ML: '#00E5FF',
-    'Data Eng': '#8B5CF6',
+    'Programming & Data Tools': '#00E5FF',
+    'Data Analysis & Visualization': '#22C55E',
+    'Business Intelligence': '#8B5CF6',
+    'Machine Learning': '#F59E0B',
+    'Deep Learning & Computer Vision': '#EC4899',
+    'Databases & Data Modeling': '#06B6D4',
+    'Business Analytics': '#10B981',
+    'Application Development': '#6366F1',
+    'Leadership & Project Management': '#F97316',
+    'Soft Skills': '#A855F7',
+    ML: '#F59E0B',
+    'Data Eng': '#06B6D4',
     Analytics: '#22C55E',
-    Dev: '#F59E0B',
-    CV: '#8B5CF6',
-    NLP: '#00E5FF',
-    Other: '#F59E0B',
-  };
-  const labels = {
-    ML: { en: 'Machine Learning', ar: 'تعلم الآلة' },
-    'Data Eng': { en: 'Data Engineering', ar: 'هندسة البيانات' },
-    Analytics: { en: 'Analytics', ar: 'تحليلات البيانات' },
-    Dev: { en: 'Development', ar: 'التطوير' },
-    CV: { en: 'Computer Vision', ar: 'رؤية الحاسوب' },
-    NLP: { en: 'NLP', ar: 'معالجة اللغة' },
-    Other: { en: 'Other', ar: 'أخرى' },
+    Dev: '#6366F1',
+    CV: '#EC4899',
+    NLP: '#F59E0B',
+    Other: '#00E5FF',
   };
 
+  const legacyLabels = {
+    ML: { en: 'Machine Learning', ar: 'تعلم الآلة' },
+    'Data Eng': { en: 'Databases & Data Modeling', ar: 'قواعد البيانات ونمذجة البيانات' },
+    Analytics: { en: 'Data Analysis & Visualization', ar: 'تحليل البيانات والتصور البياني' },
+    Dev: { en: 'Application Development', ar: 'تطوير التطبيقات' },
+    CV: { en: 'Deep Learning & Computer Vision', ar: 'التعلم العميق ورؤية الحاسوب' },
+    NLP: { en: 'Machine Learning', ar: 'تعلم الآلة' },
+    Other: { en: 'Programming & Data Tools', ar: 'البرمجة وأدوات البيانات' },
+  };
+
+  // New grouped schema: { category_en, category_ar, skills: [] }
+  if (cmsData.skills.some((skill) => Array.isArray(skill?.skills))) {
+    return cmsData.skills.map((group, index) => {
+      const label = lang === 'ar'
+        ? (group.category_ar || group.category_en || `مجموعة ${index + 1}`)
+        : (group.category_en || group.category_ar || `Skill Group ${index + 1}`);
+      const iconKey = group.iconKey || iconMap[group.category_en] || iconMap[group.category] || 'Code2';
+      return {
+        category: group.category_en || group.category || label,
+        iconKey,
+        label,
+        color: group.color || colorMap[group.category_en] || '#00E5FF',
+        skills: Array.isArray(group.skills) ? group.skills.filter(Boolean) : [],
+      };
+    });
+  }
+
+  // Backward compatibility for old flat schema.
   const groups = [];
   cmsData.skills.forEach((skill) => {
     const cat = skill.category || 'Other';
-    let group = groups.find((g) => g.category === cat);
+    const labelEn = legacyLabels[cat]?.en || cat;
+    let group = groups.find((g) => g.category === labelEn);
     if (!group) {
       group = {
-        category: cat,
+        category: labelEn,
         iconKey: iconMap[cat] || 'Code2',
-        label: labels[cat]?.[lang] || cat,
+        label: legacyLabels[cat]?.[lang] || cat,
         color: colorMap[cat] || '#00E5FF',
         skills: [],
       };
       groups.push(group);
     }
-    group.skills.push(skill[`name_${lang}`] || skill.name_en || skill.name_ar || '');
+    const name = skill[`name_${lang}`] || skill.name_en || skill.name_ar || '';
+    if (name && !group.skills.some(s => s.toLowerCase() === String(name).toLowerCase())) group.skills.push(name);
   });
 
   return groups;

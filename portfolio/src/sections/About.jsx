@@ -8,12 +8,17 @@ export default function About() {
   const { data: cmsData } = useCms();
 
   const fallbackSkillGroups = [
-    { icon: BrainCircuit, label: t.about.skills.ml,       color: '#00E5FF', skills: ['TensorFlow', 'Scikit-learn', 'YOLOv8', 'OpenCV', 'NLP'] },
-    { icon: Database,     label: t.about.skills.dataEng,  color: '#8B5CF6', skills: ['Python', 'SQL', 'ETL Pipelines', 'Azure', 'Pandas'] },
-    { icon: BarChart3,    label: t.about.skills.analytics,color: '#22C55E', skills: ['Power BI', 'Matplotlib', 'Seaborn', 'Excel', 'Statistics'] },
-    { icon: Code2,        label: t.about.skills.dev,      color: '#F59E0B', skills: ['Flask', 'Git', 'Jupyter', 'VS Code', 'Linux'] },
+    { icon: Code2, label: lang === 'ar' ? 'البرمجة وأدوات البيانات' : 'Programming & Data Tools', color: '#00E5FF', skills: ['Python', 'Jupyter Notebook', 'Pandas', 'NumPy'] },
+    { icon: BarChart3, label: lang === 'ar' ? 'تحليل البيانات والتصور البياني' : 'Data Analysis & Visualization', color: '#22C55E', skills: ['EDA', 'Data Cleaning', 'Data Filtering', 'Statistical Analysis', 'Dataset Exploration', 'Matplotlib', 'Seaborn', 'Data Visualization'] },
+    { icon: BarChart3, label: lang === 'ar' ? 'ذكاء الأعمال' : 'Business Intelligence', color: '#8B5CF6', skills: ['Power BI', 'Tableau', 'Microsoft Excel', 'Dashboard Design', 'Pivot Tables', 'Pivot Charts', 'Slicers', 'KPI Tracking', 'Business Intelligence'] },
+    { icon: BrainCircuit, label: lang === 'ar' ? 'تعلم الآلة' : 'Machine Learning', color: '#F59E0B', skills: ['Scikit-learn', 'XGBoost', 'Regression', 'Classification', 'Clustering', 'K-Means', 'DBSCAN', 'Feature Engineering', 'Model Training', 'Model Evaluation'] },
+    { icon: BrainCircuit, label: lang === 'ar' ? 'التعلم العميق ورؤية الحاسوب' : 'Deep Learning & Computer Vision', color: '#EC4899', skills: ['TensorFlow', 'Keras', 'CNN', 'Transfer Learning', 'MobileNetV2', 'YOLOv8', 'Ultralytics', 'OpenCV', 'Image Classification', 'Object Detection', 'Real-Time Inference'] },
+    { icon: Database, label: lang === 'ar' ? 'قواعد البيانات ونمذجة البيانات' : 'Databases & Data Modeling', color: '#06B6D4', skills: ['MySQL', 'Data Modeling', 'Star Schema', 'Data Preprocessing', 'Data Scaling'] },
+    { icon: BarChart3, label: lang === 'ar' ? 'تحليلات الأعمال' : 'Business Analytics', color: '#10B981', skills: ['Sales Analytics', 'Customer Analytics', 'Marketing Analytics', 'Revenue Analysis', 'Sports Analytics', 'Performance Analysis'] },
+    { icon: Code2, label: lang === 'ar' ? 'تطوير التطبيقات' : 'Application Development', color: '#6366F1', skills: ['Flask', 'PyQt', 'Tkinter', 'GUI Development', 'Prediction App Development'] },
+    { icon: Code2, label: lang === 'ar' ? 'القيادة وإدارة المشاريع' : 'Leadership & Project Management', color: '#F97316', skills: ['Team Leadership', 'Task Coordination', 'Project Planning', 'Documentation', 'Presentation Skills', 'Team Collaboration'] },
+    { icon: Code2, label: lang === 'ar' ? 'المهارات الشخصية' : 'Soft Skills', color: '#A855F7', skills: ['Problem Solving', 'Analytical Thinking', 'Fast Learning', 'Self-Learning', 'Attention to Detail', 'Communication', 'Adaptability', 'Critical Thinking', 'Research Skills', 'Time Management', 'Ownership Mindset'] },
   ];
-
   const iconMap = { BrainCircuit, Database, BarChart3, Code2 };
   const skillGroups = cmsSkills(cmsData, fallbackSkillGroups, lang).map(group => ({
     ...group,

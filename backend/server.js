@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({ origin: true }));
-app.use(express.json({ limit: '80mb' }));
+app.use(express.json({ limit: '100mb' }));
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -57,6 +57,31 @@ async function uploadToCloudinary(dataUrl, folder = 'portfolio-cms') {
 
   return cloudinary.uploader.upload(dataUrl, options);
 }
+
+
+app.post('/api/cloudinary-signature', async (req, res) => {
+  try {
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({ error: 'Cloudinary environment variables are missing.' });
+    }
+
+    const { folder = 'portfolio-cms' } = req.body || {};
+    const timestamp = Math.round(Date.now() / 1000);
+    const paramsToSign = { folder, timestamp };
+    const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
+
+    res.json({
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      folder,
+      timestamp,
+      signature,
+    });
+  } catch (err) {
+    console.error('❌ Cloudinary signature failed:', err.message);
+    res.status(500).json({ error: 'Could not create Cloudinary signature.', details: err.message });
+  }
+});
 
 app.post('/api/upload-media', async (req, res) => {
   try {

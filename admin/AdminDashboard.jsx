@@ -518,18 +518,16 @@ const INITIAL = {
     }
   },
   skills: [
-    { id:1,  name_en:"TensorFlow",   name_ar:"تنسورفلو",      level:85, category:"ML",         icon:"🤖" },
-    { id:2,  name_en:"Python",       name_ar:"بايثون",         level:92, category:"Dev",        icon:"🐍" },
-    { id:3,  name_en:"Power BI",     name_ar:"باور بي آي",     level:88, category:"Analytics",  icon:"📊" },
-    { id:4,  name_en:"SQL",          name_ar:"إس كيو إل",      level:85, category:"Data Eng",   icon:"🗄️" },
-    { id:5,  name_en:"YOLOv8",       name_ar:"يولو v8",        level:78, category:"CV",         icon:"👁️" },
-    { id:6,  name_en:"Scikit-learn", name_ar:"سكيكيت ليرن",    level:88, category:"ML",         icon:"🧠" },
-    { id:7,  name_en:"OpenCV",       name_ar:"أوبن سي في",     level:75, category:"CV",         icon:"📷" },
-    { id:8,  name_en:"Pandas",       name_ar:"باندز",          level:90, category:"Data Eng",   icon:"🐼" },
-    { id:9,  name_en:"XGBoost",      name_ar:"إكس جي بوست",    level:80, category:"ML",         icon:"🚀" },
-    { id:10, name_en:"Flask",        name_ar:"فلاسك",          level:72, category:"Dev",        icon:"⚗️" },
-    { id:11, name_en:"Azure",        name_ar:"أزور",           level:65, category:"Data Eng",   icon:"☁️" },
-    { id:12, name_en:"Matplotlib",   name_ar:"ماتبلوتليب",     level:82, category:"Analytics",  icon:"📈" },
+    { id: 1, category_en: "Programming & Data Tools", category_ar: "البرمجة وأدوات البيانات", icon: "🧰", color: "#00E5FF", skills: ["Python", "Jupyter Notebook", "Pandas", "NumPy"] },
+    { id: 2, category_en: "Data Analysis & Visualization", category_ar: "تحليل البيانات والتصور البياني", icon: "📊", color: "#22C55E", skills: ["EDA", "Data Cleaning", "Data Filtering", "Statistical Analysis", "Dataset Exploration", "Matplotlib", "Seaborn", "Data Visualization"] },
+    { id: 3, category_en: "Business Intelligence", category_ar: "ذكاء الأعمال", icon: "📈", color: "#8B5CF6", skills: ["Power BI", "Tableau", "Microsoft Excel", "Dashboard Design", "Pivot Tables", "Pivot Charts", "Slicers", "KPI Tracking", "Business Intelligence"] },
+    { id: 4, category_en: "Machine Learning", category_ar: "تعلم الآلة", icon: "🧠", color: "#F59E0B", skills: ["Scikit-learn", "XGBoost", "Regression", "Classification", "Clustering", "K-Means", "DBSCAN", "Feature Engineering", "Model Training", "Model Evaluation"] },
+    { id: 5, category_en: "Deep Learning & Computer Vision", category_ar: "التعلم العميق ورؤية الحاسوب", icon: "👁️", color: "#EC4899", skills: ["TensorFlow", "Keras", "CNN", "Transfer Learning", "MobileNetV2", "YOLOv8", "Ultralytics", "OpenCV", "Image Classification", "Object Detection", "Real-Time Inference"] },
+    { id: 6, category_en: "Databases & Data Modeling", category_ar: "قواعد البيانات ونمذجة البيانات", icon: "🗄️", color: "#06B6D4", skills: ["MySQL", "Data Modeling", "Star Schema", "Data Preprocessing", "Data Scaling"] },
+    { id: 7, category_en: "Business Analytics", category_ar: "تحليلات الأعمال", icon: "💼", color: "#10B981", skills: ["Sales Analytics", "Customer Analytics", "Marketing Analytics", "Revenue Analysis", "Sports Analytics", "Performance Analysis"] },
+    { id: 8, category_en: "Application Development", category_ar: "تطوير التطبيقات", icon: "🖥️", color: "#6366F1", skills: ["Flask", "PyQt", "Tkinter", "GUI Development", "Prediction App Development"] },
+    { id: 9, category_en: "Leadership & Project Management", category_ar: "القيادة وإدارة المشاريع", icon: "🚀", color: "#F97316", skills: ["Team Leadership", "Task Coordination", "Project Planning", "Documentation", "Presentation Skills", "Team Collaboration"] },
+    { id: 10, category_en: "Soft Skills", category_ar: "المهارات الشخصية", icon: "✨", color: "#A855F7", skills: ["Problem Solving", "Analytical Thinking", "Fast Learning", "Self-Learning", "Attention to Detail", "Communication", "Adaptability", "Critical Thinking", "Research Skills", "Time Management", "Ownership Mindset"] },
   ],
   projects: [
     { id:1, title_en:"Data Decoders", title_ar:"محللو البيانات", description_en:"Comprehensive data analysis platform decoding complex datasets into actionable insights. Built as a team competition project with advanced visualizations and ML integration.", description_ar:"منصة شاملة لتحليل البيانات تحوّل مجموعات البيانات المعقدة إلى رؤى قابلة للتنفيذ.", tech:"Python, Pandas, Scikit-learn, Power BI, SQL", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#00E5FF", images:[] },
@@ -1119,16 +1117,17 @@ function Overview({ data }) {
       </div>
 
       <Card>
-        <div style={{ fontSize:13,fontWeight:700,color:t.text,marginBottom:14 }}>Top Skills</div>
-        <div style={{ display:"flex",flexDirection:"column",gap:10 }}>
-          {data.skills.slice(0,6).map(s=>(
-            <div key={s.id}>
-              <div style={{ display:"flex",justifyContent:"space-between",marginBottom:4 }}>
-                <span style={{ fontSize:12,color:t.textSub,fontWeight:500 }}>{s.icon} {s.name_en}</span>
-                <span style={{ fontSize:12,color:t.accent,fontWeight:700 }}>{s.level}%</span>
+        <div style={{ fontSize:13,fontWeight:700,color:t.text,marginBottom:14 }}>Top Skill Groups</div>
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10 }}>
+          {normalizeSkillGroupsForAdmin(data.skills).slice(0,6).map(group=>(
+            <div key={group.id} style={{ border:`1px solid ${t.border}`,borderRadius:12,padding:12,background:t.glass }}>
+              <div style={{ display:"flex",alignItems:"center",gap:8,marginBottom:8 }}>
+                <span>{group.icon || "⭐"}</span>
+                <span style={{ fontSize:12,color:t.text,fontWeight:700 }}>{group.category_en}</span>
+                <span style={{ marginLeft:"auto",fontSize:11,color:t.accent,fontWeight:800 }}>{(group.skills || []).length}</span>
               </div>
-              <div style={{ height:5,borderRadius:99,background:t.border,overflow:"hidden" }}>
-                <div style={{ height:"100%",borderRadius:99,background:`linear-gradient(90deg,${t.accent},#a78bfa)`,width:`${s.level}%`,transition:"width 0.8s" }} />
+              <div style={{ display:"flex",flexWrap:"wrap",gap:5 }}>
+                {(group.skills || []).slice(0,5).map(skill=><span key={skill} style={{ fontSize:10,color:t.textSub,background:t.surfaceEl,border:`1px solid ${t.border}`,borderRadius:999,padding:"3px 7px" }}>{skill}</span>)}
               </div>
             </div>
           ))}
@@ -1211,7 +1210,50 @@ const moveItemInArray = (setData, key, id, direction) => {
 };
 
 // ── SKILLS ───────────────────────────────────────────────────
-const blankSkill = () => ({ id:++_id, name_en:"", name_ar:"", level:70, category:"ML", icon:"⭐" });
+const splitSkillsText = (value) => String(value || "")
+  .split(/[,\n]/)
+  .map(s => s.trim())
+  .filter(Boolean);
+
+const normalizeSkillGroupsForAdmin = (skills = []) => {
+  if (!Array.isArray(skills)) return [];
+  if (skills.some(s => Array.isArray(s?.skills))) {
+    return skills.map((group, index) => ({
+      id: group.id ?? nid(),
+      category_en: group.category_en || group.label?.en || group.category || group.name_en || `Skill Group ${index + 1}`,
+      category_ar: group.category_ar || group.label?.ar || group.category_en || group.category || group.name_ar || `مجموعة مهارات ${index + 1}`,
+      icon: group.icon || "⭐",
+      color: group.color || "#818cf8",
+      skills: Array.isArray(group.skills) ? group.skills.map(String).filter(Boolean) : splitSkillsText(group.skills),
+    }));
+  }
+
+  const labelMap = {
+    ML: { en: "Machine Learning", ar: "تعلم الآلة", icon: "🧠", color: "#F59E0B" },
+    "Data Eng": { en: "Databases & Data Modeling", ar: "قواعد البيانات ونمذجة البيانات", icon: "🗄️", color: "#06B6D4" },
+    Analytics: { en: "Data Analysis & Visualization", ar: "تحليل البيانات والتصور البياني", icon: "📊", color: "#22C55E" },
+    Dev: { en: "Application Development", ar: "تطوير التطبيقات", icon: "🖥️", color: "#6366F1" },
+    CV: { en: "Deep Learning & Computer Vision", ar: "التعلم العميق ورؤية الحاسوب", icon: "👁️", color: "#EC4899" },
+    NLP: { en: "Machine Learning", ar: "تعلم الآلة", icon: "🧠", color: "#F59E0B" },
+    Other: { en: "Programming & Data Tools", ar: "البرمجة وأدوات البيانات", icon: "🧰", color: "#00E5FF" },
+  };
+
+  const groups = [];
+  skills.forEach(skill => {
+    const cat = skill.category || "Other";
+    const meta = labelMap[cat] || labelMap.Other;
+    let group = groups.find(g => g.category_en === meta.en);
+    if (!group) {
+      group = { id: nid(), category_en: meta.en, category_ar: meta.ar, icon: meta.icon, color: meta.color, skills: [] };
+      groups.push(group);
+    }
+    const name = skill.name_en || skill.name_ar;
+    if (name && !group.skills.some(s => s.toLowerCase() === String(name).toLowerCase())) group.skills.push(name);
+  });
+  return groups;
+};
+
+const blankSkill = () => ({ id:nid(), category_en:"", category_ar:"", icon:"⭐", color:"#818cf8", skills:[] });
 
 function SkillsSection({ data, setData }) {
   const [modal, setModal] = useState(null);
@@ -1219,47 +1261,62 @@ function SkillsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankSkill()); setModal(item?"edit":"add"); };
+  const groups = normalizeSkillGroupsForAdmin(data.skills);
+  const open = (item=null) => { setForm(item?{...item, skills:[...(item.skills || [])]}:blankSkill()); setModal(item?"edit":"add"); };
   const close = () => setModal(null);
-  const save = () => { setData(d=>({...d,skills:modal==="add"?[...d.skills,form]:d.skills.map(s=>s.id===form.id?form:s)})); toast(modal==="add"?"Skill added!":"Updated!","success"); close(); };
-  const del = id => setData(d=>({...d,skills:d.skills.filter(s=>s.id!==id)}));
+  const save = () => {
+    const normalizedForm = {
+      ...form,
+      category_en: String(form.category_en || "").trim(),
+      category_ar: String(form.category_ar || form.category_en || "").trim(),
+      skills: Array.isArray(form.skills) ? form.skills.map(String).map(s => s.trim()).filter(Boolean) : splitSkillsText(form.skills),
+    };
+    setData(d=>{
+      const current = normalizeSkillGroupsForAdmin(d.skills);
+      return {
+        ...d,
+        skills: modal==="add" ? [...current, normalizedForm] : current.map(s=>s.id===normalizedForm.id?normalizedForm:s)
+      };
+    });
+    toast(modal==="add"?"Skill group added!":"Updated!","success");
+    close();
+  };
+  const del = id => setData(d=>({...d,skills:normalizeSkillGroupsForAdmin(d.skills).filter(s=>s.id!==id)}));
   return (
     <div>
-      <SectionHeader title="Skills" icon={I.skills} count={data.skills.length} onAdd={()=>open()} langToggle={<LangToggle lang={lang} setLang={setLang} />} />
+      <SectionHeader title="Skills" icon={I.skills} count={groups.length} onAdd={()=>open()} langToggle={<LangToggle lang={lang} setLang={setLang} />} />
       <DataTable searchable
         cols={[
           { key:"icon", label:"", sortable:false },
-          { key:"name_en", label:"Name (EN)" },
-          { key:"name_ar", label:"Name (AR)", render:v=><span style={{ fontFamily:"'Cairo',sans-serif",direction:"rtl" }}>{v}</span> },
-          { key:"category", label:"Category", render:v=><CategoryPill cat={v} /> },
-          { key:"level", label:"Level", render:v=>(
-            <div style={{ display:"flex",alignItems:"center",gap:8 }}>
-              <div style={{ width:60,height:5,borderRadius:99,background:t.border,overflow:"hidden" }}><div style={{ height:"100%",borderRadius:99,background:`linear-gradient(90deg,${t.accent},#a78bfa)`,width:`${v}%` }} /></div>
-              <span style={{ fontSize:11,fontWeight:700,color:t.textSub }}>{v}%</span>
-            </div>
-          )},
+          { key:"category_en", label:"Category (EN)" },
+          { key:"category_ar", label:"Category (AR)", render:v=><span style={{ fontFamily:"'Cairo',sans-serif",direction:"rtl" }}>{v}</span> },
+          { key:"skills", label:"Skills", render:v=><span style={{ fontSize:11,color:t.textSub }}>{(v || []).slice(0,8).join(", ")}{(v || []).length>8?" …":""}</span> },
+          { key:"skills", label:"Count", render:v=><CategoryPill cat={`${(v || []).length} skills`} /> },
         ]}
-        rows={data.skills} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"skills",id,"up")} onMoveDown={id=>moveItemInArray(setData,"skills",id,"down")}
+        rows={groups} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"skills",id,"up")} onMoveDown={id=>moveItemInArray(setData,"skills",id,"down")}
       />
       {modal&&(
-        <Modal title={modal==="add"?"Add Skill":"Edit Skill"} onClose={close}>
+        <Modal title={modal==="add"?"Add Skill Group":"Edit Skill Group"} onClose={close} wide>
           <div style={{ display:"flex",justifyContent:"flex-end",marginBottom:12 }}><LangToggle lang={lang} setLang={setLang} /></div>
           <div style={{ display:"flex",flexDirection:"column",gap:12 }}>
             <BilingualSection lang={lang}>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
                 {lang==="en"
-                  ? <Input label="Skill Name (EN)" value={form.name_en} onChange={e=>setForm(f=>({...f,name_en:e.target.value}))} />
-                  : <Input label="اسم المهارة (AR)" value={form.name_ar} onChange={e=>setForm(f=>({...f,name_ar:e.target.value}))} isAr />
+                  ? <Input label="Group Name (EN)" value={form.category_en || ""} onChange={e=>setForm(f=>({...f,category_en:e.target.value}))} />
+                  : <Input label="اسم المجموعة (AR)" value={form.category_ar || ""} onChange={e=>setForm(f=>({...f,category_ar:e.target.value}))} isAr />
                 }
-                <Input label="Icon (emoji)" value={form.icon} onChange={e=>setForm(f=>({...f,icon:e.target.value}))} />
+                <Input label="Icon (emoji)" value={form.icon || ""} onChange={e=>setForm(f=>({...f,icon:e.target.value}))} />
               </div>
             </BilingualSection>
-            <Select label="Category" value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
-              {["ML","Data Eng","Analytics","Dev","CV","NLP","Other"].map(c=><option key={c}>{c}</option>)}
-            </Select>
-            <Field label={`Proficiency Level — ${form.level}%`}>
-              <input type="range" min={1} max={100} value={form.level} onChange={e=>setForm(f=>({...f,level:+e.target.value}))} style={{ accentColor:t.accent,width:"100%",cursor:"pointer" }} />
-              <div style={{ height:6,borderRadius:99,background:t.border,overflow:"hidden" }}><div style={{ height:"100%",borderRadius:99,background:`linear-gradient(90deg,${t.accent},#a78bfa)`,width:`${form.level}%`,transition:"width 0.1s" }} /></div>
+            <Textarea
+              label="Skills"
+              hint="write skills separated by commas or one skill per line"
+              rows={7}
+              value={(form.skills || []).join(", ")}
+              onChange={e=>setForm(f=>({...f,skills:splitSkillsText(e.target.value)}))}
+            />
+            <Field label="Accent Color">
+              <input type="color" value={form.color || "#818cf8"} onChange={e=>setForm(f=>({...f,color:e.target.value}))} style={{ width:44,height:44,borderRadius:10,border:`1px solid ${t.border}`,cursor:"pointer",background:"none",padding:2 }} />
             </Field>
             <div style={{ display:"flex",justifyContent:"flex-end",gap:8 }}>
               <Btn variant="secondary" onClick={close}>Cancel</Btn>
@@ -1304,27 +1361,32 @@ function ProjectsSection({ data, setData }) {
       .filter(Boolean);
   };
 
-  const buildMissingSkillsFromProject = (project, existingSkills) => {
-    const existing = new Set(
-      (existingSkills || []).flatMap(skill => [
-        normalizeSkillName(skill.name_en),
-        normalizeSkillName(skill.name_ar),
-      ]).filter(Boolean)
-    );
+  const skillGroupNameFromProject = (projectCategory) => {
+    const value = String(projectCategory || "").toLowerCase();
+    if (value.includes("machine") || value.includes("ml")) return "Machine Learning";
+    if (value.includes("vision") || value.includes("cv")) return "Deep Learning & Computer Vision";
+    if (value.includes("analytics") || value.includes("analysis")) return "Data Analysis & Visualization";
+    if (value.includes("engineering") || value.includes("data eng")) return "Programming & Data Tools";
+    if (value.includes("nlp")) return "Machine Learning";
+    return "Programming & Data Tools";
+  };
 
-    return extractProjectTechSkills(project.tech)
-      .filter(skillName => !existing.has(normalizeSkillName(skillName)))
-      .map(skillName => {
-        existing.add(normalizeSkillName(skillName));
-        return {
-          id: nid(),
-          name_en: skillName,
-          name_ar: skillName,
-          level: 70,
-          category: skillCategoryFromProject(project.category),
-          icon: "⭐",
-        };
-      });
+  const buildSkillsWithProjectTech = (project, existingSkills) => {
+    const groups = normalizeSkillGroupsForAdmin(existingSkills);
+    const allExisting = new Set(groups.flatMap(group => (group.skills || []).map(normalizeSkillName)).filter(Boolean));
+    const missing = extractProjectTechSkills(project.tech).filter(skillName => !allExisting.has(normalizeSkillName(skillName)));
+    if (!missing.length) return groups;
+
+    const targetName = skillGroupNameFromProject(project.category);
+    let target = groups.find(group => normalizeSkillName(group.category_en) === normalizeSkillName(targetName));
+    if (!target) {
+      target = { id:nid(), category_en: targetName, category_ar: targetName, icon:"⭐", color: project.color || "#818cf8", skills: [] };
+      groups.push(target);
+    }
+    missing.forEach(skillName => {
+      if (!target.skills.some(s => normalizeSkillName(s) === normalizeSkillName(skillName))) target.skills.push(skillName);
+    });
+    return groups;
   };
 
   const save = () => {
@@ -1333,12 +1395,12 @@ function ProjectsSection({ data, setData }) {
         ? [...(d.projects || []), form]
         : (d.projects || []).map(p => p.id === form.id ? form : p);
 
-      const newSkills = buildMissingSkillsFromProject(form, d.skills || []);
+      const skills = buildSkillsWithProjectTech(form, d.skills || []);
 
       return {
         ...d,
         projects,
-        skills: newSkills.length ? [...(d.skills || []), ...newSkills] : (d.skills || []),
+        skills,
       };
     });
 
@@ -2090,7 +2152,7 @@ function normalizeCmsData(incoming) {
     ...incoming,
     about: { ...INITIAL.about, ...(incoming.about || {}), stats: { ...INITIAL.about.stats, ...(incoming.about?.stats || {}) } },
     siteText: mergeSiteText(incoming.siteText),
-    skills: Array.isArray(incoming.skills) ? incoming.skills : INITIAL.skills,
+    skills: normalizeSkillGroupsForAdmin(Array.isArray(incoming.skills) ? incoming.skills : INITIAL.skills),
     projects: Array.isArray(incoming.projects) ? incoming.projects : INITIAL.projects,
     experience: Array.isArray(incoming.experience) ? incoming.experience : INITIAL.experience,
     reviews: Array.isArray(incoming.reviews) ? incoming.reviews : INITIAL.reviews,
@@ -2133,13 +2195,58 @@ async function uploadImageDataUrl(dataUrl) {
 }
 
 async function uploadImageFile(file) {
-  const dataUrl = await readFileAsDataUrl(file);
-  return uploadMediaDataUrl(dataUrl);
+  return uploadMediaFile(file);
 }
 
 async function uploadMediaFile(file) {
-  const dataUrl = await readFileAsDataUrl(file);
-  return uploadMediaDataUrl(dataUrl);
+  if (!file) throw new Error("No media file selected");
+
+  // Videos and large files must not be converted to base64 because that easily
+  // exceeds browser / server JSON payload limits. Instead, ask the backend for
+  // a signed Cloudinary upload signature, then upload the binary file directly
+  // from the browser to Cloudinary.
+  const shouldUploadDirect = file.type.startsWith("video/") || file.size > 8 * 1024 * 1024;
+  if (!shouldUploadDirect) {
+    const dataUrl = await readFileAsDataUrl(file);
+    return uploadMediaDataUrl(dataUrl);
+  }
+
+  const signatureRes = await fetch(`${API_URL}/api/cloudinary-signature`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder: "portfolio-cms" }),
+  });
+
+  if (!signatureRes.ok) {
+    const text = await signatureRes.text().catch(() => "");
+    throw new Error(`Could not prepare large media upload: ${signatureRes.status} ${text}`);
+  }
+
+  const { cloudName, apiKey, folder, timestamp, signature } = await signatureRes.json();
+  if (!cloudName || !apiKey || !timestamp || !signature) {
+    throw new Error("Invalid Cloudinary signature response");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", apiKey);
+  formData.append("timestamp", timestamp);
+  formData.append("signature", signature);
+  formData.append("folder", folder || "portfolio-cms");
+
+  const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!uploadRes.ok) {
+    const text = await uploadRes.text().catch(() => "");
+    throw new Error(`Cloudinary direct upload failed: ${uploadRes.status} ${text}`);
+  }
+
+  const json = await uploadRes.json();
+  if (!json.secure_url) throw new Error("Cloudinary did not return a media URL");
+  return json.secure_url;
 }
 
 async function replaceEmbeddedImages(value, cache = new Map()) {
