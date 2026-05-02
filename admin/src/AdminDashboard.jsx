@@ -1216,41 +1216,53 @@ const splitSkillsText = (value) => String(value || "")
   .filter(Boolean);
 
 const normalizeSkillGroupsForAdmin = (skills = []) => {
-  if (!Array.isArray(skills)) return [];
-  if (skills.some(s => Array.isArray(s?.skills))) {
-    return skills.map((group, index) => ({
-      id: group.id ?? nid(),
-      category_en: group.category_en || group.label?.en || group.category || group.name_en || `Skill Group ${index + 1}`,
-      category_ar: group.category_ar || group.label?.ar || group.category_en || group.category || group.name_ar || `مجموعة مهارات ${index + 1}`,
-      icon: group.icon || "⭐",
-      color: group.color || "#818cf8",
-      skills: Array.isArray(group.skills) ? group.skills.map(String).filter(Boolean) : splitSkillsText(group.skills),
-    }));
-  }
+  const cloneCanonical = () => INITIAL.skills.map(group => ({
+    ...group,
+    skills: Array.isArray(group.skills) ? [...group.skills] : splitSkillsText(group.skills),
+  }));
 
-  const labelMap = {
-    ML: { en: "Machine Learning", ar: "تعلم الآلة", icon: "🧠", color: "#F59E0B" },
-    "Data Eng": { en: "Databases & Data Modeling", ar: "قواعد البيانات ونمذجة البيانات", icon: "🗄️", color: "#06B6D4" },
-    Analytics: { en: "Data Analysis & Visualization", ar: "تحليل البيانات والتصور البياني", icon: "📊", color: "#22C55E" },
-    Dev: { en: "Application Development", ar: "تطوير التطبيقات", icon: "🖥️", color: "#6366F1" },
-    CV: { en: "Deep Learning & Computer Vision", ar: "التعلم العميق ورؤية الحاسوب", icon: "👁️", color: "#EC4899" },
-    NLP: { en: "Machine Learning", ar: "تعلم الآلة", icon: "🧠", color: "#F59E0B" },
-    Other: { en: "Programming & Data Tools", ar: "البرمجة وأدوات البيانات", icon: "🧰", color: "#00E5FF" },
-  };
+  if (!Array.isArray(skills) || !skills.length) return cloneCanonical();
 
-  const groups = [];
-  skills.forEach(skill => {
-    const cat = skill.category || "Other";
-    const meta = labelMap[cat] || labelMap.Other;
-    let group = groups.find(g => g.category_en === meta.en);
-    if (!group) {
-      group = { id: nid(), category_en: meta.en, category_ar: meta.ar, icon: meta.icon, color: meta.color, skills: [] };
-      groups.push(group);
+  // If old flat skill records are still saved in MongoDB, replace them with the
+  // requested grouped structure. This is what makes the dashboard and website
+  // stop showing the old Machine Learning/Application Development-only cards.
+  const hasGroupedSchema = skills.some(s => Array.isArray(s?.skills));
+  if (!hasGroupedSchema) return cloneCanonical();
+
+  const canonical = cloneCanonical();
+  const normalize = value => String(value || "").trim().toLowerCase();
+
+  skills.forEach((group, index) => {
+    const categoryEn = group.category_en || group.label?.en || group.category || group.name_en || `Skill Group ${index + 1}`;
+    const categoryAr = group.category_ar || group.label?.ar || group.category_en || group.category || group.name_ar || `مجموعة مهارات ${index + 1}`;
+    let target = canonical.find(g => normalize(g.category_en) === normalize(categoryEn));
+
+    if (!target) {
+      target = {
+        id: group.id ?? nid(),
+        category_en: categoryEn,
+        category_ar: categoryAr,
+        icon: group.icon || "⭐",
+        color: group.color || "#818cf8",
+        skills: [],
+      };
+      canonical.push(target);
+    } else {
+      target.id = group.id ?? target.id;
+      target.category_ar = categoryAr || target.category_ar;
+      target.icon = group.icon || target.icon;
+      target.color = group.color || target.color;
     }
-    const name = skill.name_en || skill.name_ar;
-    if (name && !group.skills.some(s => s.toLowerCase() === String(name).toLowerCase())) group.skills.push(name);
+
+    const incomingSkills = Array.isArray(group.skills) ? group.skills.map(String).filter(Boolean) : splitSkillsText(group.skills);
+    incomingSkills.forEach(skillName => {
+      if (!target.skills.some(existing => normalize(existing) === normalize(skillName))) {
+        target.skills.push(skillName);
+      }
+    });
   });
-  return groups;
+
+  return canonical;
 };
 
 const blankSkill = () => ({ id:nid(), category_en:"", category_ar:"", icon:"⭐", color:"#818cf8", skills:[] });

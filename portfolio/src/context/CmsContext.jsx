@@ -255,7 +255,7 @@ export function cmsExperience(cmsData, lang, fallback) {
 }
 
 export function cmsSkills(cmsData, fallbackGroups, lang) {
-  if (!cmsData?.skills?.length) return fallbackGroups;
+  const normalize = (value) => String(value || '').trim().toLowerCase();
 
   const iconMap = {
     'Programming & Data Tools': 'Code2',
@@ -268,13 +268,6 @@ export function cmsSkills(cmsData, fallbackGroups, lang) {
     'Application Development': 'Code2',
     'Leadership & Project Management': 'Code2',
     'Soft Skills': 'Code2',
-    ML: 'BrainCircuit',
-    'Data Eng': 'Database',
-    Analytics: 'BarChart3',
-    Dev: 'Code2',
-    CV: 'BrainCircuit',
-    NLP: 'BrainCircuit',
-    Other: 'Code2',
   };
 
   const colorMap = {
@@ -288,60 +281,55 @@ export function cmsSkills(cmsData, fallbackGroups, lang) {
     'Application Development': '#6366F1',
     'Leadership & Project Management': '#F97316',
     'Soft Skills': '#A855F7',
-    ML: '#F59E0B',
-    'Data Eng': '#06B6D4',
-    Analytics: '#22C55E',
-    Dev: '#6366F1',
-    CV: '#EC4899',
-    NLP: '#F59E0B',
-    Other: '#00E5FF',
   };
 
-  const legacyLabels = {
-    ML: { en: 'Machine Learning', ar: 'تعلم الآلة' },
-    'Data Eng': { en: 'Databases & Data Modeling', ar: 'قواعد البيانات ونمذجة البيانات' },
-    Analytics: { en: 'Data Analysis & Visualization', ar: 'تحليل البيانات والتصور البياني' },
-    Dev: { en: 'Application Development', ar: 'تطوير التطبيقات' },
-    CV: { en: 'Deep Learning & Computer Vision', ar: 'التعلم العميق ورؤية الحاسوب' },
-    NLP: { en: 'Machine Learning', ar: 'تعلم الآلة' },
-    Other: { en: 'Programming & Data Tools', ar: 'البرمجة وأدوات البيانات' },
-  };
+  const canonical = (fallbackGroups || []).map((group) => ({
+    ...group,
+    category: group.category || group.label,
+    iconKey: group.iconKey || iconMap[group.category || group.label] || 'Code2',
+    color: group.color || colorMap[group.category || group.label] || '#00E5FF',
+    skills: Array.isArray(group.skills) ? [...group.skills] : [],
+  }));
 
-  // New grouped schema: { category_en, category_ar, skills: [] }
-  if (cmsData.skills.some((skill) => Array.isArray(skill?.skills))) {
-    return cmsData.skills.map((group, index) => {
-      const label = lang === 'ar'
-        ? (group.category_ar || group.category_en || `مجموعة ${index + 1}`)
-        : (group.category_en || group.category_ar || `Skill Group ${index + 1}`);
-      const iconKey = group.iconKey || iconMap[group.category_en] || iconMap[group.category] || 'Code2';
-      return {
-        category: group.category_en || group.category || label,
-        iconKey,
-        label,
-        color: group.color || colorMap[group.category_en] || '#00E5FF',
-        skills: Array.isArray(group.skills) ? group.skills.filter(Boolean) : [],
-      };
-    });
-  }
+  if (!cmsData?.skills?.length) return canonical;
 
-  // Backward compatibility for old flat schema.
-  const groups = [];
-  cmsData.skills.forEach((skill) => {
-    const cat = skill.category || 'Other';
-    const labelEn = legacyLabels[cat]?.en || cat;
-    let group = groups.find((g) => g.category === labelEn);
-    if (!group) {
-      group = {
+  // If the CMS still contains the old flat schema, ignore it for display and show
+  // the requested grouped skill structure instead. This prevents old Mongo data
+  // from overriding the new portfolio layout.
+  const hasGroupedSchema = cmsData.skills.some((item) => Array.isArray(item?.skills));
+  if (!hasGroupedSchema) return canonical;
+
+  // New grouped schema. Start from the requested canonical groups, then merge
+  // any extra skills added later from the dashboard without losing the main list.
+  const groups = canonical.map((group) => ({ ...group, skills: [...group.skills] }));
+
+  cmsData.skills.forEach((incoming, index) => {
+    const labelEn = incoming.category_en || incoming.category || incoming.label?.en || incoming.name_en || `Skill Group ${index + 1}`;
+    const labelAr = incoming.category_ar || incoming.label?.ar || incoming.name_ar || labelEn;
+    const targetLabel = lang === 'ar' ? labelAr : labelEn;
+
+    let target = groups.find((group) => normalize(group.category || group.label) === normalize(labelEn));
+    if (!target) {
+      target = {
         category: labelEn,
-        iconKey: iconMap[cat] || 'Code2',
-        label: legacyLabels[cat]?.[lang] || cat,
-        color: colorMap[cat] || '#00E5FF',
+        iconKey: incoming.iconKey || iconMap[labelEn] || 'Code2',
+        label: targetLabel,
+        color: incoming.color || colorMap[labelEn] || '#00E5FF',
         skills: [],
       };
-      groups.push(group);
+      groups.push(target);
+    } else {
+      target.label = targetLabel || target.label;
+      target.color = incoming.color || target.color;
     }
-    const name = skill[`name_${lang}`] || skill.name_en || skill.name_ar || '';
-    if (name && !group.skills.some(s => s.toLowerCase() === String(name).toLowerCase())) group.skills.push(name);
+
+    const incomingSkills = Array.isArray(incoming.skills) ? incoming.skills : [];
+    incomingSkills.forEach((skill) => {
+      const name = String(skill || '').trim();
+      if (name && !target.skills.some((existing) => normalize(existing) === normalize(name))) {
+        target.skills.push(name);
+      }
+    });
   });
 
   return groups;
