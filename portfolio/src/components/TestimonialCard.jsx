@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MessageSquareQuote } from 'lucide-react';
+import { ExternalLink, MessageSquareQuote } from 'lucide-react';
 import { useLang } from '../context/LangContext';
 
 const CARD_COLORS = ['#00E5FF', '#22C55E', '#8B5CF6', '#F59E0B', '#EC4899'];
