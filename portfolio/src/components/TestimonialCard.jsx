@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ExternalLink, Quote } from 'lucide-react';
+import { MessageSquareQuote } from 'lucide-react';
 import { useLang } from '../context/LangContext';
 
 const CARD_COLORS = ['#00E5FF', '#22C55E', '#8B5CF6', '#F59E0B', '#EC4899'];
@@ -96,9 +96,9 @@ export default function TestimonialCard({ testimonial, index }) {
         )}
 
         <div className="relative flex-1">
-          <Quote
+          <MessageSquareQuote
             size={42}
-            className="absolute -start-1 -top-1 opacity-10"
+            className="w-5 h-5 opacity-30"
             style={{ color }}
           />
           <p
