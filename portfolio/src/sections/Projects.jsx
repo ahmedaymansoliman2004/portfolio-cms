@@ -115,7 +115,12 @@ export default function Projects() {
 
       {/* Modal */}
       {selectedProject && (
-        <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+        <ProjectModal
+          project={selectedProject}
+          projects={projects}
+          onClose={() => setSelectedProject(null)}
+          onSelectProject={setSelectedProject}
+        />
       )}
     </section>
   );
