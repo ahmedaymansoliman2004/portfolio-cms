@@ -157,13 +157,13 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 16 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="relative mx-auto flex h-[94vh] w-full max-w-[1540px] overflow-hidden rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-2xl dark:border-white/10 dark:bg-[#121212] dark:text-white"
+          className="relative mx-auto flex h-[94vh] w-full max-w-[1540px] overflow-y-auto rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-2xl dark:border-white/10 dark:bg-[#121212] dark:text-white lg:overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           dir={isRTL ? 'rtl' : 'ltr'}
         >
           <div className="flex h-full w-full flex-col lg:flex-row">
             <aside className="w-full shrink-0 border-b border-gray-200 bg-white lg:h-full lg:w-[560px] lg:border-b-0 lg:border-e dark:border-white/10 dark:bg-[#1b1b1b]">
-              <div className="h-full overflow-y-auto px-6 py-7 sm:px-8">
+              <div className="px-6 py-7 sm:px-8 lg:h-full lg:overflow-y-auto">
                 <h2 className="mb-8 pe-12 font-display text-3xl font-bold leading-tight text-gray-950 dark:text-white sm:text-4xl">
                   {title}
                 </h2>
@@ -225,7 +225,7 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
               </div>
             </aside>
 
-            <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-[#1f1f1f]">
+            <main className="flex-1 overflow-visible bg-gray-50 dark:bg-[#1f1f1f] lg:overflow-y-auto">
               <div className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-gray-200 bg-white/90 px-6 py-4 backdrop-blur-md dark:border-white/10 dark:bg-[#111]/90">
                 <button onClick={handleCopyLink} className="inline-flex items-center gap-2 text-sm font-semibold text-green-600 transition hover:text-green-500 dark:text-green-500 dark:hover:text-green-400">
                   {labels.copy}

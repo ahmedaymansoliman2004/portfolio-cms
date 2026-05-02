@@ -75,7 +75,7 @@ export default function About() {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-[1fr_260px] gap-8 items-start">
+              <div className="space-y-7">
                 <div className="space-y-4 text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-8">
                   <p>{renderBio(t.about.bio1)}</p>
                   <p>{t.about.bio2}</p>
@@ -83,7 +83,7 @@ export default function About() {
                   <p>{t.about.bio4}</p>
                 </div>
 
-                <div className="grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-t border-gray-200/70 dark:border-white/10 pt-6">
                   {[
                     { value: cmsData?.about?.stats?.projects || '9+', label: t.about.stats.projects },
                     { value: cmsData?.about?.stats?.gpa || '3.63', label: t.about.stats.gpa },
@@ -91,9 +91,9 @@ export default function About() {
                   ].map(stat => (
                     <div
                       key={stat.label}
-                      className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] p-4 text-center"
+                      className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] p-4 sm:p-5 text-center"
                     >
-                      <p className="font-display font-bold text-2xl text-accent">{stat.value}</p>
+                      <p className="font-display font-bold text-2xl sm:text-3xl text-accent">{stat.value}</p>
                       <p className="text-xs font-mono text-gray-500 dark:text-gray-500 mt-1">{stat.label}</p>
                     </div>
                   ))}
