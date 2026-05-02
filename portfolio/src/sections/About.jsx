@@ -54,76 +54,104 @@ export default function About() {
           <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">{aboutSubtitle}</p>
         </motion.div>
 
-        <div className={`grid lg:grid-cols-2 gap-12 items-start`}>
-          {/* Bio card */}
+        <div className="space-y-10">
+          {/* Professional Summary */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="max-w-5xl mx-auto"
           >
-            <div className="card-glass p-8 rounded-2xl h-full">
-              <h3 className="font-display font-semibold text-xl text-gray-900 dark:text-white mb-4">
-                {t.about.summaryTitle}
-              </h3>
-              <div className="space-y-4 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                <p>{renderBio(t.about.bio1)}</p>
-                <p>{t.about.bio2}</p>
-                <p>{t.about.bio3}</p>
-                <p>{t.about.bio4}</p>
+            <div className="card-glass p-7 sm:p-8 lg:p-10 rounded-2xl">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <p className="font-mono text-xs text-accent tracking-widest uppercase mb-2">
+                    {lang === 'ar' ? 'ملخص مهني' : 'Profile'}
+                  </p>
+                  <h3 className="font-display font-semibold text-2xl text-gray-900 dark:text-white">
+                    {t.about.summaryTitle}
+                  </h3>
+                </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-white/10">
-                {[
-                  { value: cmsData?.about?.stats?.projects || '9+',   label: t.about.stats.projects },
-                  { value: cmsData?.about?.stats?.gpa || '3.63', label: t.about.stats.gpa },
-                  { value: cmsData?.about?.stats?.internships || '2+',   label: t.about.stats.internships },
-                ].map(stat => (
-                  <div key={stat.label} className="text-center">
-                    <p className="font-display font-bold text-2xl text-accent">{stat.value}</p>
-                    <p className="text-xs font-mono text-gray-500 dark:text-gray-500 mt-1">{stat.label}</p>
-                  </div>
-                ))}
+              <div className="grid lg:grid-cols-[1fr_260px] gap-8 items-start">
+                <div className="space-y-4 text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-8">
+                  <p>{renderBio(t.about.bio1)}</p>
+                  <p>{t.about.bio2}</p>
+                  <p>{t.about.bio3}</p>
+                  <p>{t.about.bio4}</p>
+                </div>
+
+                <div className="grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-4">
+                  {[
+                    { value: cmsData?.about?.stats?.projects || '9+', label: t.about.stats.projects },
+                    { value: cmsData?.about?.stats?.gpa || '3.63', label: t.about.stats.gpa },
+                    { value: cmsData?.about?.stats?.internships || '2+', label: t.about.stats.internships },
+                  ].map(stat => (
+                    <div
+                      key={stat.label}
+                      className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] p-4 text-center"
+                    >
+                      <p className="font-display font-bold text-2xl text-accent">{stat.value}</p>
+                      <p className="text-xs font-mono text-gray-500 dark:text-gray-500 mt-1">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Skill groups */}
+          {/* Skills */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            className="max-w-6xl mx-auto"
           >
-            {skillGroups.map((group, i) => {
-              const Icon = group.icon;
-              return (
-                <motion.div
-                  key={group.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 + i * 0.08, duration: 0.5 }}
-                  className="card-glass p-5 rounded-2xl hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: group.color + '15', border: `1px solid ${group.color}30` }}
-                    >
-                      <Icon size={16} style={{ color: group.color }} />
+            <div className="mb-7 text-center">
+              <p className="font-mono text-xs text-accent tracking-widest uppercase mb-2">
+                {lang === 'ar' ? 'مجالاتي التقنية' : 'Core Skill Areas'}
+              </p>
+              <h3 className="font-display font-semibold text-2xl text-gray-900 dark:text-white">
+                {lang === 'ar' ? 'المهارات' : 'Skills'}
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {skillGroups.map((group, i) => {
+                const Icon = group.icon;
+                return (
+                  <motion.div
+                    key={group.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.08 + i * 0.05, duration: 0.45 }}
+                    className="card-glass p-5 sm:p-6 rounded-2xl hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: group.color + '15', border: `1px solid ${group.color}30` }}
+                      >
+                        <Icon size={17} style={{ color: group.color }} />
+                      </div>
+                      <h4 className="font-display font-semibold text-base text-gray-800 dark:text-white leading-snug">
+                        {group.label}
+                      </h4>
                     </div>
-                    <h4 className="font-display font-semibold text-sm text-gray-800 dark:text-white">{group.label}</h4>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.skills.map(skill => (
-                      <span key={skill} className="tech-tag">{skill}</span>
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
+
+                    <div className="flex flex-wrap gap-2">
+                      {group.skills.map(skill => (
+                        <span key={skill} className="tech-tag">{skill}</span>
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </div>
