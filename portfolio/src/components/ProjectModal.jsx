@@ -105,14 +105,14 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
           <button
             onClick={onClose}
             aria-label="Close project details"
-            className="absolute end-4 top-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition hover:bg-white/30"
+            className="absolute right-4 top-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition hover:bg-white/30"
           >
             <X size={24} />
           </button>
 
           <div className="flex h-full w-full flex-col lg:flex-row">
             {/* Details sidebar */}
-            <aside className="w-full shrink-0 border-b border-white/10 bg-[#1b1b1b] lg:h-full lg:w-[420px] lg:border-b-0 lg:border-e lg:border-white/10">
+            <aside className="w-full shrink-0 border-b border-white/10 bg-[#1b1b1b] lg:h-full lg:w-[540px] lg:border-b-0 lg:border-e lg:border-white/10">
               <div className="h-full overflow-y-auto px-6 py-7 sm:px-8">
                 <h2 className="mb-8 pe-12 font-display text-3xl font-bold leading-tight text-white sm:text-4xl">
                   {title}
@@ -129,7 +129,7 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
                     <h3 className="mb-4 font-display text-base font-semibold text-gray-200">
                       {labels.description}.
                     </h3>
-                    <p className="text-gray-100/90">{description}</p>
+                    <p className="text-gray-100/90 leading-8">{description}</p>
                   </div>
 
                   <div>
@@ -192,7 +192,7 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
 
             {/* Scrollable project body */}
             <main className="flex-1 overflow-y-auto bg-[#1f1f1f]">
-              <div className="sticky top-0 z-20 flex items-center justify-end gap-3 border-b border-white/10 bg-[#111]/90 px-6 py-4 backdrop-blur-md">
+              <div className="sticky top-0 z-20 flex items-center justify-start gap-3 border-b border-white/10 bg-[#111]/90 px-6 py-4 pe-20 backdrop-blur-md">
                 <button
                   onClick={handleCopyLink}
                   className="inline-flex items-center gap-2 text-sm font-semibold text-green-500 transition hover:text-green-400"

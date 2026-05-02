@@ -1202,7 +1202,73 @@ function ProjectsSection({ data, setData }) {
   const t = useT();
   const open = (item=null) => { setForm(item?{...item}:blankProject()); setModal(item?"edit":"add"); };
   const close = () => setModal(null);
-  const save = () => { setData(d=>({...d,projects:modal==="add"?[...d.projects,form]:d.projects.map(p=>p.id===form.id?form:p)})); toast(modal==="add"?"Project added!":"Updated!","success"); close(); };
+
+  const skillCategoryFromProject = (projectCategory) => {
+    const value = String(projectCategory || "").toLowerCase();
+    if (value.includes("machine") || value.includes("ml")) return "ML";
+    if (value.includes("analytics") || value.includes("analysis")) return "Analytics";
+    if (value.includes("engineering") || value.includes("data eng")) return "Data Eng";
+    if (value.includes("vision") || value.includes("cv")) return "CV";
+    if (value.includes("nlp")) return "NLP";
+    return "Other";
+  };
+
+  const normalizeSkillName = (value) => String(value || "").trim().toLowerCase();
+
+  const extractProjectTechSkills = (tech) => {
+    if (Array.isArray(tech)) return tech.map(String).map(s => s.trim()).filter(Boolean);
+    return String(tech || "")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean);
+  };
+
+  const buildMissingSkillsFromProject = (project, existingSkills) => {
+    const existing = new Set(
+      (existingSkills || []).flatMap(skill => [
+        normalizeSkillName(skill.name_en),
+        normalizeSkillName(skill.name_ar),
+      ]).filter(Boolean)
+    );
+
+    return extractProjectTechSkills(project.tech)
+      .filter(skillName => !existing.has(normalizeSkillName(skillName)))
+      .map(skillName => {
+        existing.add(normalizeSkillName(skillName));
+        return {
+          id: nid(),
+          name_en: skillName,
+          name_ar: skillName,
+          level: 70,
+          category: skillCategoryFromProject(project.category),
+          icon: "⭐",
+        };
+      });
+  };
+
+  const save = () => {
+    setData(d => {
+      const projects = modal === "add"
+        ? [...(d.projects || []), form]
+        : (d.projects || []).map(p => p.id === form.id ? form : p);
+
+      const newSkills = buildMissingSkillsFromProject(form, d.skills || []);
+
+      return {
+        ...d,
+        projects,
+        skills: newSkills.length ? [...(d.skills || []), ...newSkills] : (d.skills || []),
+      };
+    });
+
+    toast(
+      modal === "add"
+        ? "Project added! New tech skills were added automatically if missing."
+        : "Updated! New tech skills were added automatically if missing.",
+      "success"
+    );
+    close();
+  };
   const del = id => setData(d=>({...d,projects:d.projects.filter(p=>p.id!==id)}));
   return (
     <div>
