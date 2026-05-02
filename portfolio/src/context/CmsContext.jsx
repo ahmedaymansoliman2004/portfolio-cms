@@ -167,12 +167,13 @@ export function cmsProjects(cmsData, fallback) {
     tech: Array.isArray(p.tech) ? p.tech : String(p.tech || '').split(',').map((x) => x.trim()).filter(Boolean),
     github: p.github || '',
     live: p.live || null,
-    video: p.video || p.video_url || p.videoUrl || '',
-    video_url: p.video_url || p.video || p.videoUrl || '',
     category: p.category || 'Machine Learning',
     categoryAr: p.category_ar || p.categoryAr || p.category || '',
     color: p.color || '#00E5FF',
     images: Array.isArray(p.images) ? p.images : [],
+    videos: Array.isArray(p.videos) ? p.videos : [p.video || p.videoUrl].filter(Boolean),
+    video: p.video || p.videoUrl || '',
+    videoUrl: p.videoUrl || p.video || '',
   }));
 }
 

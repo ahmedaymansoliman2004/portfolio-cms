@@ -395,6 +395,87 @@ function ImageUploader({ value, onChange, label, shape="rect", hint, multi=false
   return <SingleImageUploader value={value} onChange={onChange} label={label} hint={hint} shape={shape} />;
 }
 
+
+function MultiVideoUploader({ videos = [], onChange, label, hint }) {
+  const t = useT();
+  const inputRef = useRef(null);
+  const [drag, setDrag] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const currentVideos = Array.isArray(videos) ? videos.filter(Boolean) : [];
+
+  const readFiles = async (files) => {
+    const arr = [...files].filter(file => file.type.startsWith("video/"));
+    if (!arr.length) return;
+    try {
+      setUploading(true);
+      const urls = await Promise.all(arr.map(file => uploadMediaFile(file)));
+      onChange([...currentVideos, ...urls.filter(Boolean)]);
+    } catch (err) {
+      alert(err.message || "Video upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const remove = (idx) => onChange(currentVideos.filter((_, i) => i !== idx));
+  const onPick = e => { readFiles(e.target.files); e.target.value = ""; };
+  const onDrop = e => { e.preventDefault(); setDrag(false); readFiles(e.dataTransfer.files); };
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+      {label && (
+        <label style={{ fontSize:11, fontWeight:700, color:t.textMut, textTransform:"uppercase", letterSpacing:"0.08em" }}>
+          {label}{hint && <span style={{ fontWeight:400, textTransform:"none", letterSpacing:"normal", marginLeft:6, opacity:0.65 }}>{hint}</span>}
+        </label>
+      )}
+
+      {currentVideos.length > 0 && (
+        <div style={{ display:"flex", flexDirection:"column", gap:8, background:t.surfaceEl, border:`1px solid ${t.border}`, borderRadius:14, padding:12 }}>
+          {currentVideos.map((src, idx) => (
+            <div key={src + idx} style={{ display:"flex", alignItems:"center", gap:10, border:`1px solid ${t.border}`, borderRadius:10, padding:8, background:t.surface }}>
+              <video src={src} style={{ width:120, height:68, objectFit:"cover", borderRadius:8, background:"#000" }} controls />
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:t.text }}>Project video #{idx + 1}</div>
+                <div style={{ fontSize:11, color:t.textMut, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{src}</div>
+              </div>
+              <Btn size="sm" variant="danger" onClick={() => remove(idx)}>
+                <Ic d={I.trash} size={12} /> Remove
+              </Btn>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div
+        onDragOver={e=>{e.preventDefault();setDrag(true);}}
+        onDragLeave={()=>setDrag(false)}
+        onDrop={onDrop}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border:`2px dashed ${drag ? t.accent : t.border}`,
+          borderRadius:12, cursor:"pointer", transition:"all 0.2s",
+          background: drag ? t.accentSoft : t.glass,
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+          gap:8, padding:"22px 16px",
+        }}
+      >
+        <div style={{ width:44, height:44, borderRadius:12, background:drag?t.accentSoft:t.surfaceEl, border:`1px solid ${drag?t.accent:t.border}`, display:"flex", alignItems:"center", justifyContent:"center", color:t.accent }}>
+          <Ic d={I.upload} size={20} />
+        </div>
+        <div style={{ textAlign:"center" }}>
+          <div style={{ fontSize:13, fontWeight:700, color:t.text }}>
+            {uploading ? "Uploading video..." : drag ? "Drop videos here" : "Click or drag & drop project videos"}
+          </div>
+          <div style={{ fontSize:11, color:t.textMut, marginTop:3 }}>MP4 · WEBM · MOV supported through Cloudinary</div>
+        </div>
+      </div>
+
+      <input ref={inputRef} type="file" accept="video/*" multiple style={{ display:"none" }} onChange={onPick} />
+    </div>
+  );
+}
+
 // ─── DATA ────────────────────────────────────────────────────
 let _id = 200;
 const nid = () => ++_id;
@@ -1192,7 +1273,7 @@ function SkillsSection({ data, setData }) {
 }
 
 // ── PROJECTS ─────────────────────────────────────────────────
-const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", video:"", video_url:"", category:"Machine Learning", color:"#818cf8" });
+const blankProject = () => ({ id:++_id, title_en:"", title_ar:"", description_en:"", description_ar:"", tech:"", github:"", live:"", category:"Machine Learning", color:"#818cf8", images:[], videos:[] });
 
 function ProjectsSection({ data, setData }) {
   const [modal, setModal] = useState(null);
@@ -1283,8 +1364,8 @@ function ProjectsSection({ data, setData }) {
           { key:"title_ar", label:"Title (AR)", render:v=><span style={{ fontFamily:"'Cairo',sans-serif",direction:"rtl",fontSize:12 }}>{v}</span> },
           { key:"category", label:"Category", render:v=><CategoryPill cat={v} /> },
           { key:"tech", label:"Stack", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
+          { key:"videos", label:"Video", sortable:false, render:v=>(Array.isArray(v)&&v.length)?<span style={{ color:t.accent,fontSize:11,fontWeight:700 }}>Video</span>:<span style={{ color:t.textMut }}>—</span> },
           { key:"github", label:"GitHub", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>↗</a>:<span style={{ color:t.textMut }}>—</span> },
-          { key:"video", label:"Video", sortable:false, render:v=>v?<a href={v} target="_blank" rel="noreferrer" style={{ color:t.accent,fontSize:11 }}>▶</a>:<span style={{ color:t.textMut }}>—</span> },
         ]}
         rows={data.projects} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"projects",id,"up")} onMoveDown={id=>moveItemInArray(setData,"projects",id,"down")}
       />
@@ -1302,13 +1383,6 @@ function ProjectsSection({ data, setData }) {
               <Input label="GitHub URL" type="url" value={form.github} onChange={e=>setForm(f=>({...f,github:e.target.value}))} />
               <Input label="Live URL" type="url" value={form.live} onChange={e=>setForm(f=>({...f,live:e.target.value}))} />
             </div>
-            <Input
-              label="Project Video URL"
-              hint="YouTube, Vimeo, or direct MP4/WebM URL"
-              type="url"
-              value={form.video || form.video_url || ""}
-              onChange={e=>setForm(f=>({...f,video:e.target.value,video_url:e.target.value}))}
-            />
             <Field label="Accent Color">
               <div style={{ display:"flex",alignItems:"center",gap:10 }}>
                 <input type="color" value={form.color} onChange={e=>setForm(f=>({...f,color:e.target.value}))} style={{ width:44,height:44,borderRadius:10,border:`1px solid ${t.border}`,cursor:"pointer",background:"none",padding:2 }} />
@@ -1317,10 +1391,16 @@ function ProjectsSection({ data, setData }) {
             </Field>
             <ImageUploader
               label="Project Images"
-              hint="shown in project modal carousel"
+              hint="shown in project modal gallery"
               multi
               images={form.images || []}
               onImagesChange={imgs => setForm(f => ({ ...f, images: imgs }))}
+            />
+            <MultiVideoUploader
+              label="Project Videos"
+              hint="upload from your device using drag/drop or file picker; shown with project media"
+              videos={form.videos || []}
+              onChange={videos => setForm(f => ({ ...f, videos }))}
             />
             <div style={{ display:"flex",justifyContent:"flex-end",gap:8 }}>
               <Btn variant="secondary" onClick={close}>Cancel</Btn>
@@ -2026,16 +2106,16 @@ function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = e => resolve(e.target.result);
-    reader.onerror = () => reject(new Error("Could not read image file"));
+    reader.onerror = () => reject(new Error("Could not read media file"));
     reader.readAsDataURL(file);
   });
 }
 
-async function uploadImageDataUrl(dataUrl) {
-  const res = await fetch(`${API_URL}/api/upload-image`, {
+async function uploadMediaDataUrl(dataUrl) {
+  const res = await fetch(`${API_URL}/api/upload-media`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: dataUrl, folder: "portfolio-cms" }),
+    body: JSON.stringify({ media: dataUrl, folder: "portfolio-cms" }),
   });
 
   if (!res.ok) {
@@ -2044,20 +2124,29 @@ async function uploadImageDataUrl(dataUrl) {
   }
 
   const json = await res.json();
-  if (!json.url) throw new Error("Cloudinary did not return an image URL");
+  if (!json.url) throw new Error("Cloudinary did not return a media URL");
   return json.url;
+}
+
+async function uploadImageDataUrl(dataUrl) {
+  return uploadMediaDataUrl(dataUrl);
 }
 
 async function uploadImageFile(file) {
   const dataUrl = await readFileAsDataUrl(file);
-  return uploadImageDataUrl(dataUrl);
+  return uploadMediaDataUrl(dataUrl);
+}
+
+async function uploadMediaFile(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  return uploadMediaDataUrl(dataUrl);
 }
 
 async function replaceEmbeddedImages(value, cache = new Map()) {
   if (typeof value === "string") {
-    if (!value.startsWith("data:image/")) return value;
+    if (!value.startsWith("data:image/") && !value.startsWith("data:video/")) return value;
     if (cache.has(value)) return cache.get(value);
-    const uploadedUrl = await uploadImageDataUrl(value);
+    const uploadedUrl = await uploadMediaDataUrl(value);
     cache.set(value, uploadedUrl);
     return uploadedUrl;
   }

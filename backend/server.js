@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({ origin: true }));
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '80mb' }));
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -28,38 +28,76 @@ mongoose.connect(process.env.MONGO_URI)
     console.error(err.message);
   });
 
-app.post('/api/upload-image', async (req, res) => {
+async function uploadToCloudinary(dataUrl, folder = 'portfolio-cms') {
+  if (!dataUrl || typeof dataUrl !== 'string') {
+    const err = new Error('Media file is required.');
+    err.status = 400;
+    throw err;
+  }
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    const err = new Error('Cloudinary environment variables are missing.');
+    err.status = 500;
+    throw err;
+  }
+
+  const isImage = dataUrl.startsWith('data:image/');
+  const options = {
+    folder,
+    resource_type: 'auto',
+  };
+
+  if (isImage) {
+    options.transformation = [
+      { width: 1400, height: 1400, crop: 'limit' },
+      { quality: 'auto:good' },
+      { fetch_format: 'auto' }
+    ];
+  }
+
+  return cloudinary.uploader.upload(dataUrl, options);
+}
+
+app.post('/api/upload-media', async (req, res) => {
   try {
-    const { image, folder = 'portfolio-cms' } = req.body || {};
-
-    if (!image || typeof image !== 'string') {
-      return res.status(400).json({ error: 'Image is required.' });
-    }
-
-    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-      return res.status(500).json({ error: 'Cloudinary environment variables are missing.' });
-    }
-
-    const result = await cloudinary.uploader.upload(image, {
-      folder,
-      resource_type: 'image',
-      transformation: [
-        { width: 1400, height: 1400, crop: 'limit' },
-        { quality: 'auto:good' },
-        { fetch_format: 'auto' }
-      ]
-    });
+    const { media, image, folder = 'portfolio-cms' } = req.body || {};
+    const result = await uploadToCloudinary(media || image, folder);
 
     res.json({
       url: result.secure_url,
       public_id: result.public_id,
+      resource_type: result.resource_type,
+      format: result.format,
       width: result.width,
       height: result.height,
       bytes: result.bytes,
+      duration: result.duration,
     });
   } catch (err) {
-    console.error('❌ Cloudinary upload failed:', err.message);
-    res.status(500).json({ error: 'Image upload failed.', details: err.message });
+    console.error('❌ Cloudinary media upload failed:', err.message);
+    res.status(err.status || 500).json({ error: 'Media upload failed.', details: err.message });
+  }
+});
+
+// Backward compatibility for old dashboard code.
+app.post('/api/upload-image', async (req, res) => {
+  try {
+    const { image, folder = 'portfolio-cms' } = req.body || {};
+    const result = await uploadToCloudinary(image, folder);
+
+    res.json({
+      url: result.secure_url,
+      public_id: result.public_id,
+      resource_type: result.resource_type,
+      format: result.format,
+      width: result.width,
+      height: result.height,
+      bytes: result.bytes,
+      duration: result.duration,
+    });
+  } catch (err) {
+    console.error('❌ Cloudinary image upload failed:', err.message);
+    res.status(err.status || 500).json({ error: 'Image upload failed.', details: err.message });
   }
 });
 

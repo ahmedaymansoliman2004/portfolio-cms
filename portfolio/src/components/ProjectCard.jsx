@@ -7,7 +7,7 @@ export default function ProjectCard({ project, onClick, index }) {
   const title    = typeof project.title    === 'object' ? project.title[lang]    : project.title;
   const shortDesc= typeof project.shortDesc=== 'object' ? project.shortDesc[lang]: project.shortDesc;
   const category = lang === 'ar' ? (project.categoryAr || project.category) : project.category;
-  const hasVideo = Boolean(project.video || project.video_url || project.videoUrl);
+  const hasVideo = Boolean(project.video || project.videoUrl || (Array.isArray(project.videos) && project.videos.length));
 
   return (
     <motion.div
@@ -27,20 +27,19 @@ export default function ProjectCard({ project, onClick, index }) {
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute top-3 start-3">
+        <div className="absolute top-3 start-3 flex items-center gap-2">
           <span
             className="text-xs font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-sm text-white"
             style={{ background: project.color + '40', border: `1px solid ${project.color}50` }}
           >
             {category}
           </span>
+          {hasVideo && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-black/45 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+              <PlayCircle size={13} /> Video
+            </span>
+          )}
         </div>
-        {hasVideo && (
-          <div className="absolute bottom-3 start-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-            <PlayCircle size={13} />
-            {lang === 'ar' ? 'فيديو' : 'Video'}
-          </div>
-        )}
         <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white">
             <ArrowUpRight size={16} />

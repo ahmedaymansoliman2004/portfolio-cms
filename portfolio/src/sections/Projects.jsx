@@ -54,15 +54,15 @@ export default function Projects() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-2 mb-10"
+          className="flex flex-wrap justify-center gap-3 mb-10"
         >
           {/* All */}
           <button
             onClick={() => setFilterKey(ALL_KEY)}
-            className={`px-4 py-2 rounded-full text-xs font-mono font-medium transition-all duration-200 ${
+            className={`px-5 py-2.5 rounded-full text-xs font-mono font-semibold border transition-all duration-200 ${
               filterKey === ALL_KEY
-                ? 'bg-accent text-[#0A0E1A] shadow-lg shadow-accent/20'
-                : 'border border-gray-200 bg-white/80 text-gray-600 hover:border-accent/40 hover:bg-accent/5 hover:text-gray-900 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-300 dark:hover:border-accent/50 dark:hover:bg-accent/10 dark:hover:text-white'
+                ? 'border-accent bg-accent text-[#071018] shadow-lg shadow-accent/25'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-accent/50 hover:text-accent hover:bg-accent/5 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-300 dark:hover:border-accent/50 dark:hover:bg-accent/10 dark:hover:text-accent'
             }`}
           >
             {allLabel}
@@ -71,10 +71,10 @@ export default function Projects() {
             <button
               key={cat.en}
               onClick={() => setFilterKey(cat.en)}
-              className={`px-4 py-2 rounded-full text-xs font-mono font-medium transition-all duration-200 ${
+              className={`px-5 py-2.5 rounded-full text-xs font-mono font-semibold border transition-all duration-200 ${
                 filterKey === cat.en
-                  ? 'bg-accent text-[#0A0E1A] shadow-lg shadow-accent/20'
-                  : 'bg-gray-100 dark:bg-white/8 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15'
+                  ? 'border-accent bg-accent text-[#071018] shadow-lg shadow-accent/25'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-accent/50 hover:text-accent hover:bg-accent/5 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-300 dark:hover:border-accent/50 dark:hover:bg-accent/10 dark:hover:text-accent'
               }`}
             >
               {lang === 'ar' ? cat.ar : cat.en}
