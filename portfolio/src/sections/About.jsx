@@ -20,8 +20,23 @@ export default function About() {
     { icon: Code2, label: lang === 'ar' ? 'المهارات الشخصية' : 'Soft Skills', color: '#A855F7', skills: ['Problem Solving', 'Analytical Thinking', 'Fast Learning', 'Self-Learning', 'Attention to Detail', 'Communication', 'Adaptability', 'Critical Thinking', 'Research Skills', 'Time Management', 'Ownership Mindset'] },
   ];
   const iconMap = { BrainCircuit, Database, BarChart3, Code2 };
-  const skillGroups = cmsSkills(cmsData, fallbackSkillGroups, lang).map(group => ({
+
+  const getSkillGroupLabel = (group) => {
+    if (lang === 'ar') {
+      return group.category_ar || group.title_ar || group.label_ar || group.name_ar || group.label || group.category || '';
+    }
+
+    return group.category_en || group.title_en || group.label_en || group.name_en || group.category || group.label || '';
+  };
+
+  const getSkillGroupKey = (group, index) => {
+    return group.id || group.category_en || group.title_en || group.name_en || group.category || `skill-group-${index}`;
+  };
+
+  const skillGroups = cmsSkills(cmsData, fallbackSkillGroups, lang).map((group, index) => ({
     ...group,
+    displayLabel: getSkillGroupLabel(group),
+    stableKey: getSkillGroupKey(group, index),
     icon: group.icon || iconMap[group.iconKey] || Code2,
   }));
   const aboutTitle = siteText(cmsData, 'about', 'title', lang, t.about.title);
@@ -124,7 +139,7 @@ export default function About() {
                 const Icon = group.icon;
                 return (
                   <motion.div
-                    key={group.label}
+                    key={group.stableKey}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -139,13 +154,13 @@ export default function About() {
                         <Icon size={17} style={{ color: group.color }} />
                       </div>
                       <h4 className="font-display font-semibold text-base text-gray-800 dark:text-white leading-snug">
-                        {group.label}
+                        {group.displayLabel}
                       </h4>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      {group.skills.map(skill => (
-                        <span key={skill} className="tech-tag">{skill}</span>
+                      {group.skills.map((skill, skillIndex) => (
+                        <span key={`${group.stableKey}-${skill}-${skillIndex}`} className="tech-tag">{skill}</span>
                       ))}
                     </div>
                   </motion.div>
