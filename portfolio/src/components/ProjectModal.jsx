@@ -162,7 +162,7 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
           dir={isRTL ? 'rtl' : 'ltr'}
         >
           <div className="flex h-full w-full flex-col lg:flex-row">
-            <aside className="w-full shrink-0 border-b border-gray-200 bg-white lg:h-full lg:w-[560px] lg:border-b-0 lg:border-e dark:border-white/10 dark:bg-[#1b1b1b]">
+            <aside className="order-2 w-full shrink-0 border-t border-gray-200 bg-white lg:order-1 lg:h-full lg:w-[560px] lg:border-t-0 lg:border-e dark:border-white/10 dark:bg-[#1b1b1b]">
               <div className="px-6 py-7 sm:px-8 lg:h-full lg:overflow-y-auto">
                 <h2 className="mb-8 pe-12 font-display text-3xl font-bold leading-tight text-gray-950 dark:text-white sm:text-4xl">
                   {title}
@@ -225,7 +225,7 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
               </div>
             </aside>
 
-            <main className="flex-1 overflow-visible bg-gray-50 dark:bg-[#1f1f1f] lg:overflow-y-auto">
+            <main className="order-1 flex-1 overflow-visible bg-gray-50 dark:bg-[#1f1f1f] lg:order-2 lg:overflow-y-auto">
               <div className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-gray-200 bg-white/90 px-6 py-4 backdrop-blur-md dark:border-white/10 dark:bg-[#111]/90">
                 <button onClick={handleCopyLink} className="inline-flex items-center gap-2 text-sm font-semibold text-green-600 transition hover:text-green-500 dark:text-green-500 dark:hover:text-green-400">
                   {labels.copy}
