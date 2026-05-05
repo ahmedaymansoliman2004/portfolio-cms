@@ -59,9 +59,6 @@ export default function Footer() {
           <p className="text-xs text-gray-400 dark:text-gray-600 font-mono">
             © {new Date().getFullYear()} Ahmed Ayman Soliman. {t.footer.rights}
           </p>
-          <p className="text-xs text-gray-400 dark:text-gray-600 flex items-center gap-1">
-            {t.footer.builtWith} <Heart size={10} className="text-red-400 fill-red-400 mx-1" /> React, Tailwind &amp; Framer Motion
-          </p>
         </div>
       </div>
     </footer>

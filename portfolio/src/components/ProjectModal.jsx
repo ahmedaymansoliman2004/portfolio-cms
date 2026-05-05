@@ -116,8 +116,6 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
     role: lang === 'ar' ? 'دوري' : 'My role',
     description: lang === 'ar' ? 'وصف المشروع' : 'Project description',
     skills: lang === 'ar' ? 'المهارات والمخرجات' : 'Skills and deliverables',
-    published: lang === 'ar' ? 'تاريخ النشر' : 'Published on',
-    report: lang === 'ar' ? 'الإبلاغ عن مشكلة' : 'Report an issue',
     copy: lang === 'ar' ? 'نسخ الرابط' : 'Copy link',
     github: lang === 'ar' ? 'عرض على GitHub' : 'View on GitHub',
     demo: lang === 'ar' ? 'عرض مباشر' : 'Live Demo',
@@ -126,7 +124,6 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
   };
 
   const role = project.role || project.role_en || (category || (lang === 'ar' ? 'مشروع' : 'Project'));
-  const published = project.date || project.published || project.year || labels.noDate;
 
   const handleCopyLink = async () => {
     const url = `${window.location.origin}${window.location.pathname}#projects`;
@@ -191,20 +188,6 @@ export default function ProjectModal({ project, projects = [], onClose, onSelect
                         </span>
                       ))}
                     </div>
-                  </div>
-
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {labels.published} <span className="font-semibold text-gray-800 dark:text-gray-200">{published}</span>
-                  </p>
-
-                  <div className="border-t border-gray-200 pt-6 dark:border-white/10">
-                    <a
-                      href={`mailto:ahmedayman.soliman27@gmail.com?subject=Issue about ${encodeURIComponent(title)}`}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 underline underline-offset-4 transition hover:text-gray-950 dark:text-gray-200 dark:hover:text-white"
-                    >
-                      <AlertCircle size={15} />
-                      {labels.report}
-                    </a>
                   </div>
 
                   <div className="flex flex-col gap-3 pt-1">
