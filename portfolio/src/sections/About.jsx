@@ -1,11 +1,16 @@
 import { motion } from 'framer-motion';
 import { Code2, Database, BrainCircuit, BarChart3 } from 'lucide-react';
 import { useLang } from '../context/LangContext';
-import { useCms, siteText, cmsSkills } from '../context/CmsContext';
+import { useCms, siteText, cmsSkills, cmsProjects } from '../context/CmsContext';
+import { projects as fallbackProjects } from '../data/projects';
+import { calculateTotalExperience } from '../utils/experienceUtils';
 
 export default function About() {
   const { t, lang } = useLang();
   const { data: cmsData } = useCms();
+
+  const projectsCount = cmsProjects(cmsData, fallbackProjects).length;
+  const experienceYears = calculateTotalExperience(cmsData?.experience);
 
   const fallbackSkillGroups = [
     { icon: Code2, label: lang === 'ar' ? 'البرمجة وأدوات البيانات' : 'Programming & Data Tools', color: '#00E5FF', skills: ['Python', 'Jupyter Notebook', 'Pandas', 'NumPy'] },
@@ -100,9 +105,9 @@ export default function About() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-t border-gray-200/70 dark:border-white/10 pt-6">
                   {[
-                    { value: cmsData?.about?.stats?.projects || '9+', label: t.about.stats.projects },
+                    { value: projectsCount ? `${projectsCount}+` : "0", label: t.about.stats.projects },
                     { value: cmsData?.about?.stats?.gpa || '3.63', label: t.about.stats.gpa },
-                    { value: cmsData?.about?.stats?.internships || '2+', label: t.about.stats.internships },
+                    { value: experienceYears, label: lang === "ar" ? "سنوات الخبرة" : "Years of Experience" },
                   ].map(stat => (
                     <div
                       key={stat.label}

@@ -245,12 +245,22 @@ export function cmsExperience(cmsData, lang, fallback) {
   if (!cmsData?.experience?.length) return fallback;
 
   return cmsData.experience.map((e) => ({
-    role: localized(e, 'role', lang),
-    company: localized(e, 'company', lang),
-    period: localized(e, 'period', lang),
-    type: e.type || 'work',
-    bullets: String(localized(e, 'bullets', lang)).split('\n').filter(Boolean),
-    color: e.color || '#00E5FF',
+    id: e.id,
+
+    role: localized(e, "role", lang),
+    company: localized(e, "company", lang),
+
+    category: e.category || "work",
+
+    startDate: e.startDate || null,
+    endDate: e.endDate || null,
+    present: Boolean(e.present),
+
+    bullets: String(localized(e, "bullets", lang))
+      .split("\n")
+      .filter(Boolean),
+
+    color: e.color || "#00E5FF",
   }));
 }
 

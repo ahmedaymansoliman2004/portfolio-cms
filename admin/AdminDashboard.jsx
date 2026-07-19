@@ -6,64 +6,13 @@
  * ============================================================
  */
 
-import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
-
-// ─── THEME CONTEXT ────────────────────────────────────────────
-const ThemeCtx = createContext({ dark: true, toggle: () => {} });
-const useTheme = () => useContext(ThemeCtx);
-
-// ─── TOAST CONTEXT ────────────────────────────────────────────
-const ToastCtx = createContext({ toast: () => {} });
-const useToast = () => useContext(ToastCtx);
-
-// ─── ICON PRIMITIVES ─────────────────────────────────────────
-const Ic = ({ d, size = 16, className = "", strokeWidth = 1.75, style }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round"
-    strokeLinejoin="round" className={className} style={style}>
-    {Array.isArray(d) ? d.map((p, i) => <path key={i} d={p} />) : <path d={d} />}
-  </svg>
-);
-
-const I = {
-  dashboard:  "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",
-  about:      ["M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2","M12 11a4 4 0 100-8 4 4 0 000 8z"],
-  skills:     "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
-  projects:   ["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
-  experience: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
-  reviews:    "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",
-  recs:       ["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75","M9 11a4 4 0 100-8 4 4 0 000 8z"],
-  certs:      ["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"],
-  links:      ["M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71","M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"],
-  social:     ["M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"],
-  contact:    ["M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z","M22 6l-10 7L2 6"],
-  api:        ["M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z","M14 2v6h6","M16 13H8","M16 17H8","M10 9H8"],
-  logout:     ["M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4","M16 17l5-5-5-5","M21 12H9"],
-  plus:       ["M12 5v14","M5 12h14"],
-  edit:       ["M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7","M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"],
-  trash:      ["M3 6h18","M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"],
-  save:       ["M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z","M17 21v-8H7v8","M7 3v5h8"],
-  close:      ["M18 6L6 18","M6 6l12 12"],
-  eye:        ["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 100 6 3 3 0 000-6z"],
-  star:       "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
-  menu:       ["M3 12h18","M3 6h18","M3 18h18"],
-  check:      "M20 6L9 17l-5-5",
-  warn:       ["M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z","M12 9v4","M12 17h.01"],
-  sun:        ["M12 1v2","M12 21v2","M4.22 4.22l1.42 1.42","M18.36 18.36l1.42 1.42","M1 12h2","M21 12h2","M4.22 19.78l1.42-1.42","M18.36 5.64l1.42-1.42","M12 6a6 6 0 010 12A6 6 0 0112 6z"],
-  moon:       "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",
-  search:     ["M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"],
-  externalLink: ["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
-  globe:      ["M12 2a10 10 0 100 20A10 10 0 0012 2z","M2 12h20","M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"],
-  lang:       ["M5 8l4 4-4 4","M19 8l-4 4 4 4","M12 3v18"],
-  info:       ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M12 8v4","M12 16h.01"],
-  upload:     ["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M17 8l-5-5-5 5","M12 3v12"],
-  image:      ["M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"],
-  arrowUp:    ["M12 19V5","M5 12l7-7 7 7"],
-  arrowDown:  ["M12 5v14","M19 12l-7 7-7-7"],
-  settings:   ["M12 15.5A3.5 3.5 0 1012 8a3.5 3.5 0 000 7.5z","M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.31.48.6 1.51.6H21a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"],
-  text:       ["M4 7h16","M4 12h16","M4 17h10"],
-  xCircle:    ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M15 9l-6 6","M9 9l6 6"],
-};
+import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useTheme, useToast, Ic, I, useT, ToastProvider, ThemeProvider,
+  Btn, Field, inputStyle, Input,
+} from "./theme.jsx";
+import { getContent, saveContent, uploadImage, uploadMedia, hasToken, removeToken } from "./api.js";
+import Login from "./Login.jsx";
 
 // ─── IMAGE UPLOADER ──────────────────────────────────────────
 // Single-image uploader: always shows existing image, replace/remove buttons,
@@ -541,12 +490,12 @@ const INITIAL = {
     { id:9, title_en:"Formula Student Analysis", title_ar:"تحليلات Formula Student", description_en:"Performance analytics system for Formula Student racing team analyzing telemetry data, lap times, and vehicle dynamics with SQL dashboards and Power BI reports.", description_ar:"نظام تحليلات أداء لفريق سباقات Formula Student مع لوحات SQL وتقارير Power BI.", tech:"Python, SQL, Power BI, Pandas, NumPy", github:"https://github.com/ahmedaymansoliman2004", live:"", category:"Data Engineering", color:"#EF4444", images:[] },
   ],
   experience: [
-    { id:1, role_en:"IT Intern (AI Engineer)", role_ar:"متدرب تقنية المعلومات (مهندس ذكاء اصطناعي)", company_en:"Encryptcore", company_ar:"Encryptcore", period_en:"Aug 2026 – Sep 2026", period_ar:"أغسطس 2026 – سبتمبر 2026", type:"work", bullets_en:"Developed AI-based dress code detection system using YOLOv8\nWorked with 2,700+ labeled images and real-time OpenCV inference", bullets_ar:"طور نظام اكتشاف قواعد اللباس بالذكاء الاصطناعي باستخدام YOLOv8\nعمل مع 2700+ صورة مُصنَّفة واستدلال OpenCV في الوقت الفعلي", color:"#8B5CF6" },
-    { id:2, role_en:"Machine Learning Intern", role_ar:"متدرب تعلم الآلة", company_en:"Elevvo Pathways", company_ar:"Elevvo Pathways", period_en:"Feb 2026 – Mar 2026", period_ar:"فبراير 2026 – مارس 2026", type:"work", bullets_en:"Completed ML tasks covering preprocessing, modeling, and evaluation\nApplied supervised learning techniques on real datasets", bullets_ar:"أتم مهام تعلم الآلة في المعالجة المسبقة والنمذجة والتقييم\nطبّق تقنيات التعلم المُشرف على مجموعات بيانات حقيقية", color:"#00E5FF" },
-    { id:3, role_en:"Data Engineering Trainee", role_ar:"متدرب هندسة البيانات", company_en:"Digital Egypt Pioneers Initiative (DEPI)", company_ar:"مبادرة مصر الرقمية (DEPI)", period_en:"Nov 2025 – Present", period_ar:"نوفمبر 2025 – الآن", type:"work", bullets_en:"Building ETL pipelines using Python, SQL, and Azure basics\nWorking on data workflows, automation, and Big Data concepts\nLeading a 6-member team in ETL pipeline project", bullets_ar:"بناء خطوط أنابيب ETL باستخدام Python وSQL وأساسيات Azure\nالعمل على سير بيانات وأتمتة ومفاهيم Big Data\nقيادة فريق من 6 أعضاء في مشروع ETL", color:"#22C55E" },
-    { id:4, role_en:"Freelance ML Engineer", role_ar:"مهندس تعلم آلة حر", company_en:"Mostaql & Khamsat", company_ar:"مستقل وخمسات", period_en:"May 2024 – Present", period_ar:"مايو 2024 – الآن", type:"work", bullets_en:"Built ML models for regression and classification problems\nPerformed data preprocessing, feature engineering, and model deployment", bullets_ar:"بنى نماذج ML للانحدار والتصنيف\nأجرى معالجة بيانات وهندسة ميزات ونشر نماذج", color:"#F59E0B" },
-    { id:5, role_en:"Data Analysis Trainee", role_ar:"متدرب تحليل البيانات", company_en:"Digital Egypt Pioneers Initiative (DEPI)", company_ar:"مبادرة مصر الرقمية (DEPI)", period_en:"Nov 2024 – May 2025", period_ar:"نوفمبر 2024 – مايو 2025", type:"work", bullets_en:"Analyzed 31K+ UK railway records using Python and SQL\nBuilt Power BI dashboards for KPIs and trends\nLed a 4-member analytics team", bullets_ar:"حلّل 31 ألف+ سجل سكك حديدية بريطانية بـPython وSQL\nبنى لوحات Power BI لمؤشرات الأداء والتوجهات\nقاد فريقًا تحليليًا من 4 أعضاء", color:"#EC4899" },
-    { id:6, role_en:"MIS Student", role_ar:"طالب نظم معلومات إدارية", company_en:"MSA University", company_ar:"جامعة MSA", period_en:"2023 – Jun 2027", period_ar:"2023 – يونيو 2027", type:"edu", bullets_en:"Faculty of Management Sciences – Management Information Systems\nGPA: 3.63 / 4.00 (Egyptian) · 3.73 / 4.00 (British)", bullets_ar:"كلية علوم الإدارة – نظم المعلومات الإدارية\nالمعدل: 3.63 / 4.00 (مصري) · 3.73 / 4.00 (بريطاني)", color:"#06B6D4" },
+    { id:1, role_en:"IT Intern (AI Engineer)", role_ar:"متدرب تقنية المعلومات (مهندس ذكاء اصطناعي)", company_en:"Encryptcore", company_ar:"Encryptcore", category:"internship", startDate:"2026-08-01", endDate:"2026-09-30", present:false, bullets_en:"Developed AI-based dress code detection system using YOLOv8\nWorked with 2,700+ labeled images and real-time OpenCV inference", bullets_ar:"طور نظام اكتشاف قواعد اللباس بالذكاء الاصطناعي باستخدام YOLOv8\nعمل مع 2700+ صورة مُصنَّفة واستدلال OpenCV في الوقت الفعلي", color:"#8B5CF6" },
+    { id:2, role_en:"Machine Learning Intern", role_ar:"متدرب تعلم الآلة", company_en:"Elevvo Pathways", company_ar:"Elevvo Pathways", category:"internship", startDate:"2026-02-01", endDate:"2026-03-31", present:false, bullets_en:"Completed ML tasks covering preprocessing, modeling, and evaluation\nApplied supervised learning techniques on real datasets", bullets_ar:"أتم مهام تعلم الآلة في المعالجة المسبقة والنمذجة والتقييم\nطبّق تقنيات التعلم المُشرف على مجموعات بيانات حقيقية", color:"#00E5FF" },
+    { id:3, role_en:"Data Engineering Trainee", role_ar:"متدرب هندسة البيانات", company_en:"Digital Egypt Pioneers Initiative (DEPI)", company_ar:"مبادرة مصر الرقمية (DEPI)", category:"program", startDate:"2025-11-01", endDate:null, present:true, bullets_en:"Building ETL pipelines using Python, SQL, and Azure basics\nWorking on data workflows, automation, and Big Data concepts\nLeading a 6-member team in ETL pipeline project", bullets_ar:"بناء خطوط أنابيب ETL باستخدام Python وSQL وأساسيات Azure\nالعمل على سير بيانات وأتمتة ومفاهيم Big Data\nقيادة فريق من 6 أعضاء في مشروع ETL", color:"#22C55E" },
+    { id:4, role_en:"Freelance ML Engineer", role_ar:"مهندس تعلم آلة حر", company_en:"Mostaql & Khamsat", company_ar:"مستقل وخمسات", category:"freelance", startDate:"2024-05-01", endDate:null, present:true, bullets_en:"Built ML models for regression and classification problems\nPerformed data preprocessing, feature engineering, and model deployment", bullets_ar:"بنى نماذج ML للانحدار والتصنيف\nأجرى معالجة بيانات وهندسة ميزات ونشر نماذج", color:"#F59E0B" },
+    { id:5, role_en:"Data Analysis Trainee", role_ar:"متدرب تحليل البيانات", company_en:"Digital Egypt Pioneers Initiative (DEPI)", company_ar:"مبادرة مصر الرقمية (DEPI)", category:"program", startDate:"2024-11-01", endDate:"2025-05-31", present:false, bullets_en:"Analyzed 31K+ UK railway records using Python and SQL\nBuilt Power BI dashboards for KPIs and trends\nLed a 4-member analytics team", bullets_ar:"حلّل 31 ألف+ سجل سكك حديدية بريطانية بـPython وSQL\nبنى لوحات Power BI لمؤشرات الأداء والتوجهات\nقاد فريقًا تحليليًا من 4 أعضاء", color:"#EC4899" },
+    { id:6, role_en:"MIS Student", role_ar:"طالب نظم معلومات إدارية", company_en:"MSA University", company_ar:"جامعة MSA", category:"education", startDate:"2023-10-01", endDate:"2027-06-30", present:false, bullets_en:"Faculty of Management Sciences – Management Information Systems\nGPA: 3.63 / 4.00 (Egyptian) · 3.73 / 4.00 (British)", bullets_ar:"كلية علوم الإدارة – نظم المعلومات الإدارية\nالمعدل: 3.63 / 4.00 (مصري) · 3.73 / 4.00 (بريطاني)", color:"#06B6D4" },
   ],
   reviews: [
     { id:1, name:"فراس ج.", platform:"Khamsat", service_en:"Data Analysis with Python", service_ar:"تحليل بيانات باستخدام بايثون", rating:5, comment_en:"We work under emergency conditions, and he was extremely patient with us. Thank you for your time and effort.", comment_ar:"نحن نعمل في ظروف طارئة، وكان صبور معنا لأبعد حد. شكرًا على وقتك وجهدك.", link:"https://khamsat.com/user/ahmedayman01555/reviews/1004857", avatar:"" },
@@ -588,60 +537,6 @@ const INITIAL = {
     { id:4, type:"Address", value:"Giza, Egypt" },
   ],
 };
-
-// ─── DESIGN TOKENS ───────────────────────────────────────────
-const tokens = {
-  dark: {
-    bg:"#0a0a0f", surface:"#111118", surfaceEl:"#18181f",
-    border:"rgba(255,255,255,0.07)", borderHov:"rgba(255,255,255,0.14)",
-    text:"#f0f0f5", textMut:"#71717a", textSub:"#a1a1aa",
-    accent:"#818cf8", accentGl:"rgba(129,140,248,0.15)", accentSoft:"rgba(129,140,248,0.08)",
-    ar:"#fb923c", arSoft:"rgba(251,146,60,0.1)", arGl:"rgba(251,146,60,0.15)",
-    danger:"#f87171", dangerSoft:"rgba(248,113,113,0.08)",
-    success:"#34d399", successSoft:"rgba(52,211,153,0.1)",
-    warn:"#fbbf24", warnSoft:"rgba(251,191,36,0.1)",
-    sidebar:"#0d0d14", header:"rgba(10,10,15,0.85)",
-    shadow:"0 4px 24px rgba(0,0,0,0.5)", shadowLg:"0 12px 48px rgba(0,0,0,0.7)",
-    glass:"rgba(255,255,255,0.03)",
-    pill:{
-      ml:{bg:"rgba(129,140,248,0.12)",text:"#a5b4fc"},
-      dev:{bg:"rgba(52,211,153,0.12)",text:"#6ee7b7"},
-      ana:{bg:"rgba(251,191,36,0.12)",text:"#fcd34d"},
-      cv:{bg:"rgba(251,113,133,0.12)",text:"#fda4af"},
-      data:{bg:"rgba(56,189,248,0.12)",text:"#7dd3fc"},
-      work:{bg:"rgba(167,139,250,0.12)",text:"#c4b5fd"},
-      edu:{bg:"rgba(56,189,248,0.12)",text:"#7dd3fc"},
-      cert:{bg:"rgba(52,211,153,0.12)",text:"#6ee7b7"},
-      other:{bg:"rgba(161,161,170,0.12)",text:"#a1a1aa"},
-    },
-  },
-  light: {
-    bg:"#f5f5f9", surface:"#ffffff", surfaceEl:"#f8f8fc",
-    border:"rgba(0,0,0,0.07)", borderHov:"rgba(0,0,0,0.14)",
-    text:"#111118", textMut:"#71717a", textSub:"#52525b",
-    accent:"#6366f1", accentGl:"rgba(99,102,241,0.12)", accentSoft:"rgba(99,102,241,0.06)",
-    ar:"#ea580c", arSoft:"rgba(234,88,12,0.08)", arGl:"rgba(234,88,12,0.12)",
-    danger:"#ef4444", dangerSoft:"rgba(239,68,68,0.06)",
-    success:"#10b981", successSoft:"rgba(16,185,129,0.08)",
-    warn:"#f59e0b", warnSoft:"rgba(245,158,11,0.08)",
-    sidebar:"#ffffff", header:"rgba(255,255,255,0.9)",
-    shadow:"0 2px 16px rgba(0,0,0,0.08)", shadowLg:"0 8px 40px rgba(0,0,0,0.12)",
-    glass:"rgba(0,0,0,0.02)",
-    pill:{
-      ml:{bg:"rgba(99,102,241,0.1)",text:"#4f46e5"},
-      dev:{bg:"rgba(16,185,129,0.1)",text:"#059669"},
-      ana:{bg:"rgba(245,158,11,0.1)",text:"#b45309"},
-      cv:{bg:"rgba(239,68,68,0.1)",text:"#dc2626"},
-      data:{bg:"rgba(14,165,233,0.1)",text:"#0284c7"},
-      work:{bg:"rgba(139,92,246,0.1)",text:"#7c3aed"},
-      edu:{bg:"rgba(14,165,233,0.1)",text:"#0284c7"},
-      cert:{bg:"rgba(16,185,129,0.1)",text:"#059669"},
-      other:{bg:"rgba(113,113,122,0.1)",text:"#52525b"},
-    },
-  },
-};
-
-function useT() { const { dark } = useTheme(); return dark ? tokens.dark : tokens.light; }
 
 function pillColor(t, cat) {
   if (!cat) return t.pill.other;
@@ -695,40 +590,6 @@ function BilingualSection({ lang, children }) {
   );
 }
 
-// ─── TOAST ───────────────────────────────────────────────────
-function ToastProvider({ children }) {
-  const [toasts, setToasts] = useState([]);
-  const toast = useCallback((msg, type = "success") => {
-    const id = Date.now();
-    setToasts(ts => [...ts, { id, msg, type }]);
-    setTimeout(() => setToasts(ts => ts.filter(t => t.id !== id)), 3500);
-  }, []);
-  const t = useT();
-  return (
-    <ToastCtx.Provider value={{ toast }}>
-      {children}
-      <div style={{ position:"fixed", bottom:24, right:24, zIndex:9999, display:"flex", flexDirection:"column", gap:8 }}>
-        {toasts.map(toast => {
-          const isErr = toast.type==="error"; const isWarn = toast.type==="warn";
-          const bg = isErr ? t.danger : isWarn ? t.warn : t.success;
-          return (
-            <div key={toast.id} style={{
-              background:t.surface, border:`1px solid ${bg}30`, borderLeft:`3px solid ${bg}`,
-              borderRadius:10, padding:"12px 16px", boxShadow:t.shadowLg,
-              color:t.text, fontSize:13, fontWeight:500, display:"flex", alignItems:"center", gap:8,
-              maxWidth:340, animation:"slideIn 0.25s ease",
-            }}>
-              <span style={{ color:bg, fontSize:16 }}>{isErr?"✕":isWarn?"⚠":"✓"}</span>
-              {toast.msg}
-            </div>
-          );
-        })}
-      </div>
-      <style>{`@keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}`}</style>
-    </ToastCtx.Provider>
-  );
-}
-
 // ─── CONFIRM DIALOG ──────────────────────────────────────────
 function ConfirmDialog({ message, onConfirm, onCancel }) {
   const t = useT();
@@ -762,63 +623,6 @@ function Modal({ title, onClose, children, wide }) {
         <div style={{ padding:"20px 24px" }}>{children}</div>
       </div>
     </div>
-  );
-}
-
-// ─── BUTTON ──────────────────────────────────────────────────
-function Btn({ children, onClick, variant="primary", type="button", disabled, size="md" }) {
-  const t = useT();
-  const [hov, setHov] = useState(false);
-  const styles = {
-    primary:{ background:hov?"#6d73f5":t.accent, color:"#fff", border:`1px solid transparent`, boxShadow:hov?`0 0 20px ${t.accent}50`:"none" },
-    secondary:{ background:hov?t.surfaceEl:"transparent", color:t.textSub, border:`1px solid ${t.border}` },
-    danger:{ background:hov?t.danger:t.dangerSoft, color:hov?"#fff":t.danger, border:`1px solid ${t.danger}40` },
-    ghost:{ background:hov?t.surfaceEl:"transparent", color:hov?t.text:t.textMut, border:"1px solid transparent" },
-    success:{ background:hov?t.success:t.successSoft, color:hov?"#fff":t.success, border:`1px solid ${t.success}40` },
-  }[variant]||{};
-  const pad = size==="sm"?"5px 10px":"8px 14px";
-  const fs = size==="sm"?12:13;
-  return (
-    <button type={type} onClick={onClick} disabled={disabled}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ display:"inline-flex",alignItems:"center",gap:6,padding:pad,borderRadius:9,fontSize:fs,fontWeight:600,cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.5:1,transition:"all 0.15s",...styles }}>
-      {children}
-    </button>
-  );
-}
-
-// ─── FORM FIELDS ─────────────────────────────────────────────
-function Field({ label, hint, children }) {
-  const t = useT();
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-      {label && <label style={{ fontSize:11, fontWeight:700, color:t.textMut, textTransform:"uppercase", letterSpacing:"0.08em" }}>
-        {label}{hint&&<span style={{ fontWeight:400, textTransform:"none", letterSpacing:"normal", marginLeft:6, color:t.textMut, opacity:0.7 }}>{hint}</span>}
-      </label>}
-      {children}
-    </div>
-  );
-}
-
-function inputStyle(t, focused, isAr=false) {
-  return {
-    background: focused ? t.surfaceEl : t.glass,
-    border: `1px solid ${focused ? (isAr?t.ar:t.accent) : t.border}`,
-    borderRadius:10, padding:"10px 12px", fontSize:13, color:t.text,
-    outline:"none", width:"100%", boxSizing:"border-box", transition:"all 0.15s",
-    boxShadow: focused ? `0 0 0 3px ${isAr?t.arSoft:t.accentSoft}` : "none",
-    fontFamily: isAr ? "'Cairo', 'Noto Sans Arabic', sans-serif" : "inherit",
-    direction: isAr ? "rtl" : "ltr", textAlign: isAr ? "right" : "left",
-  };
-}
-
-function Input({ label, hint, isAr, ...props }) {
-  const t = useT();
-  const [foc, setFoc] = useState(false);
-  return (
-    <Field label={label} hint={hint}>
-      <input style={inputStyle(t, foc, isAr)} onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)} {...props} />
-    </Field>
   );
 }
 
@@ -1184,9 +988,7 @@ function AboutSection({ data, setData }) {
           ))}
         </div>
         <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20 }}>
-          <Input label="Stat: Projects" value={form.stats.projects} onChange={e=>setForm(f=>({...f,stats:{...f.stats,projects:e.target.value}}))} />
           <Input label="Stat: GPA" value={form.stats.gpa} onChange={e=>setForm(f=>({...f,stats:{...f.stats,gpa:e.target.value}}))} />
-          <Input label="Stat: Internships" value={form.stats.internships} onChange={e=>setForm(f=>({...f,stats:{...f.stats,internships:e.target.value}}))} />
         </div>
         <div style={{ display:"flex",justifyContent:"flex-end" }}>
           <Btn onClick={save}><Ic d={I.save} size={13} /> Save Changes</Btn>
@@ -1488,7 +1290,20 @@ function ProjectsSection({ data, setData }) {
 }
 
 // ── EXPERIENCE ───────────────────────────────────────────────
-const blankExp = () => ({ id:++_id, role_en:"", role_ar:"", company_en:"", company_ar:"", period_en:"", period_ar:"", type:"work", bullets_en:"", bullets_ar:"", color:"#818cf8" });
+const blankExp = () => ({
+  id: ++_id,
+  role_en: "",
+  role_ar: "",
+  company_en: "",
+  company_ar: "",
+  category: "work",
+  startDate: "",
+  endDate: "",
+  present: false,
+  bullets_en: "",
+  bullets_ar: "",
+  color: "#818cf8"
+});
 
 function ExperienceSection({ data, setData }) {
   const [modal, setModal] = useState(null);
@@ -1496,44 +1311,129 @@ function ExperienceSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankExp()); setModal(item?"edit":"add"); };
+  const open = (item = null) => { setForm(item ? { ...item } : blankExp()); setModal(item ? "edit" : "add"); };
   const close = () => setModal(null);
-  const save = () => { setData(d=>({...d,experience:modal==="add"?[...d.experience,form]:d.experience.map(e=>e.id===form.id?form:e)})); toast(modal==="add"?"Entry added!":"Updated!","success"); close(); };
-  const del = id => setData(d=>({...d,experience:d.experience.filter(e=>e.id!==id)}));
+  const save = () => { setData(d => ({ ...d, experience: modal === "add" ? [...d.experience, form] : d.experience.map(e => e.id === form.id ? form : e) })); toast(modal === "add" ? "Entry added!" : "Updated!", "success"); close(); };
+  const del = id => setData(d => ({ ...d, experience: d.experience.filter(e => e.id !== id) }));
+  
   return (
     <div>
-      <SectionHeader title="Experience" icon={I.experience} count={data.experience.length} onAdd={()=>open()} langToggle={<LangToggle lang={lang} setLang={setLang} />} />
+      <SectionHeader title="Experience" icon={I.experience} count={data.experience.length} onAdd={() => open()} langToggle={<LangToggle lang={lang} setLang={setLang} />} />
       <DataTable searchable
         cols={[
-          { key:"type", label:"Type", render:v=><CategoryPill cat={v==="edu"?"Education":"Work"} /> },
-          { key:"role_en", label:"Role (EN)" },
-          { key:"role_ar", label:"Role (AR)", render:v=><span style={{ fontFamily:"'Cairo',sans-serif",direction:"rtl",fontSize:12 }}>{v}</span> },
-          { key:"company_en", label:"Company" },
-          { key:"period_en", label:"Period", render:v=><span style={{ fontSize:11,color:t.textSub }}>{v}</span> },
+          { key: "category", label: "Category", render: v => <CategoryPill cat={v} /> },
+          { key: "role_en", label: "Role (EN)" },
+          { key: "role_ar", label: "Role (AR)", render: v => <span style={{ fontFamily: "'Cairo',sans-serif", direction: "rtl", fontSize: 12 }}>{v}</span> },
+          { key: "company_en", label: "Company" },
+          { key: "startDate", label: "Duration", render: (_, row) => (<span style={{ fontSize: 11, color: t.textSub }}> {row.startDate} {" → "} {row.present ? "Present" : (row.endDate || "-")} </span>) },
         ]}
-        rows={data.experience} onEdit={open} onDelete={del} manualOrder onMoveUp={id=>moveItemInArray(setData,"experience",id,"up")} onMoveDown={id=>moveItemInArray(setData,"experience",id,"down")}
+        rows={data.experience} onEdit={open} onDelete={del} manualOrder onMoveUp={id => moveItemInArray(setData, "experience", id, "up")} onMoveDown={id => moveItemInArray(setData, "experience", id, "down")}
       />
-      {modal&&(
-        <Modal title={modal==="add"?"Add Experience":"Edit Experience"} onClose={close} wide>
-          <div style={{ display:"flex",justifyContent:"flex-end",marginBottom:12 }}><LangToggle lang={lang} setLang={setLang} /></div>
-          <div style={{ display:"flex",flexDirection:"column",gap:12 }}>
-            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-              <BiInputPair labelEn="Role (EN)" labelAr="المسمى الوظيفي (AR)" valEn={form.role_en} valAr={form.role_ar} onChangeEn={e=>setForm(f=>({...f,role_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,role_ar:e.target.value}))} lang={lang} />
-              <BiInputPair labelEn="Company (EN)" labelAr="الشركة (AR)" valEn={form.company_en} valAr={form.company_ar} onChangeEn={e=>setForm(f=>({...f,company_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,company_ar:e.target.value}))} lang={lang} />
+      
+      {modal && (
+        <Modal title={modal === "add" ? "Add Experience" : "Edit Experience"} onClose={close} wide>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+            <LangToggle lang={lang} setLang={setLang} />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            
+            {/* Role & Company */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <BiInputPair
+                labelEn="Role (EN)"
+                labelAr="المسمى الوظيفي (AR)"
+                valEn={form.role_en}
+                valAr={form.role_ar}
+                onChangeEn={(e) => setForm((f) => ({ ...f, role_en: e.target.value }))}
+                onChangeAr={(e) => setForm((f) => ({ ...f, role_ar: e.target.value }))}
+                lang={lang}
+              />
+              <BiInputPair
+                labelEn="Company (EN)"
+                labelAr="الشركة (AR)"
+                valEn={form.company_en}
+                valAr={form.company_ar}
+                onChangeEn={(e) => setForm((f) => ({ ...f, company_en: e.target.value }))}
+                onChangeAr={(e) => setForm((f) => ({ ...f, company_ar: e.target.value }))}
+                lang={lang}
+              />
             </div>
-            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-              <BiInputPair labelEn="Period (EN)" labelAr="الفترة (AR)" valEn={form.period_en} valAr={form.period_ar} onChangeEn={e=>setForm(f=>({...f,period_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,period_ar:e.target.value}))} lang={lang} />
-              <Select label="Type" value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))}>
-                <option value="work">Work</option><option value="edu">Education</option>
+
+            {/* Dates & Category */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Field label="Start Date">
+                <input
+                  type="date"
+                  value={form.startDate || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                />
+              </Field>
+
+              <Field label="End Date">
+                <input
+                  type="date"
+                  disabled={form.present}
+                  value={form.endDate || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+                />
+              </Field>
+
+              <Select
+                label="Category"
+                value={form.category}
+                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+              >
+                <option value="work">Work</option>
+                <option value="internship">Internship</option>
+                <option value="freelance">Freelance</option>
+                <option value="education">Education</option>
+                <option value="program">Program</option>
+                <option value="volunteer">Volunteer</option>
               </Select>
+
+              <Field label="Status">
+                <label style={{ display: "flex", alignItems: "center", gap: 8, height: "100%", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={form.present}
+                    onChange={(e) => setForm((f) => ({ ...f, present: e.target.checked, endDate: e.target.checked ? "" : f.endDate }))}
+                  />
+                  Currently Working
+                </label>
+              </Field>
             </div>
-            <BiInputPair labelEn="Bullet Points (EN) — one per line" labelAr="النقاط (AR) — سطر لكل نقطة" valEn={form.bullets_en} valAr={form.bullets_ar} onChangeEn={e=>setForm(f=>({...f,bullets_en:e.target.value}))} onChangeAr={e=>setForm(f=>({...f,bullets_ar:e.target.value}))} multiline rows={4} lang={lang} />
+
+            {/* Bullet Points */}
+            <BiInputPair
+              labelEn="Bullet Points (EN) — one per line"
+              labelAr="النقاط (AR) — سطر لكل نقطة"
+              valEn={form.bullets_en}
+              valAr={form.bullets_ar}
+              onChangeEn={(e) => setForm((f) => ({ ...f, bullets_en: e.target.value }))}
+              onChangeAr={(e) => setForm((f) => ({ ...f, bullets_ar: e.target.value }))}
+              multiline
+              rows={4}
+              lang={lang}
+            />
+
+            {/* Color */}
             <Field label="Accent Color">
-              <input type="color" value={form.color} onChange={e=>setForm(f=>({...f,color:e.target.value}))} style={{ width:44,height:44,borderRadius:10,border:`1px solid ${t.border}`,cursor:"pointer",background:"none",padding:2 }} />
+              <input
+                type="color"
+                value={form.color}
+                onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${t.border}`, cursor: "pointer", background: "none", padding: 2 }}
+              />
             </Field>
-            <div style={{ display:"flex",justifyContent:"flex-end",gap:8 }}>
-              <Btn variant="secondary" onClick={close}>Cancel</Btn>
-              <Btn onClick={save}><Ic d={I.save} size={13} /> Save</Btn>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <Btn variant="secondary" onClick={close}>
+                Cancel
+              </Btn>
+              <Btn onClick={save}>
+                <Ic d={I.save} size={13} /> Save
+              </Btn>
             </div>
           </div>
         </Modal>
@@ -1980,167 +1880,16 @@ function SettingsSection() {
   return <div><SectionHeader title="Settings" icon={I.settings} /><Card style={{ maxWidth:520 }}><div style={{ fontSize:14,fontWeight:800,color:t.text,marginBottom:6 }}>Change Dashboard Password</div><p style={{ fontSize:12,color:t.textSub,lineHeight:1.6,marginBottom:16 }}>Password management is now inside the dashboard, not on the login screen.</p><form onSubmit={save} style={{ display:"flex",flexDirection:"column",gap:12 }}><Input type="password" label="Current Password" value={oldPw} onChange={e=>setOldPw(e.target.value)} /><Input type="password" label="New Password" value={newPw1} onChange={e=>setNewPw1(e.target.value)} /><Input type="password" label="Confirm New Password" value={newPw2} onChange={e=>setNewPw2(e.target.value)} /><div style={{ display:"flex",justifyContent:"flex-end",marginTop:8 }}><Btn type="submit"><Ic d={I.save} size={13} /> Save Password</Btn></div></form></Card></div>;
 }
 
-// ── LOGIN ─────────────────────────────────────────────────────
-// Stores current password in module-level ref so it persists across logout/login cycles
+// ── SETTINGS: LOCAL PASSWORD DISPLAY ────────────────────────────
+// Cosmetic-only store for the "Change Dashboard Password" card in
+// Settings. Real authentication happens against the backend via
+// api.js (see Login.jsx) — this module-level ref just persists the
+// value shown here across logout/login cycles within the same tab.
 const _savedPw = { current: "admin123" };
 
-function LoginPage({ onLogin }) {
-  const [pw,      setPw]      = useState("");
-  const [error,   setError]   = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPw,  setShowPw]  = useState(false);
-
-  // change-password mode
-  const [changing,    setChanging]    = useState(false);
-  const [oldPw,       setOldPw]       = useState("");
-  const [newPw1,      setNewPw1]      = useState("");
-  const [newPw2,      setNewPw2]      = useState("");
-  const [chgError,    setChgError]    = useState("");
-  const [chgSuccess,  setChgSuccess]  = useState("");
-
-  const { dark, toggle } = useTheme();
-  const t = useT();
-
-  /* ── sign-in ── */
-  const handleLogin = e => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      if (pw === _savedPw.current) {
-        onLogin();
-      } else {
-        setError("Incorrect password. Please try again.");
-        setLoading(false);
-      }
-    }, 600);
-  };
-
-  /* ── change password ── */
-  const handleChange = e => {
-    e.preventDefault();
-    setChgError(""); setChgSuccess("");
-    if (oldPw !== _savedPw.current)    { setChgError("Current password is wrong."); return; }
-    if (newPw1.length < 6)             { setChgError("New password must be at least 6 characters."); return; }
-    if (newPw1 !== newPw2)             { setChgError("New passwords don't match."); return; }
-    _savedPw.current = newPw1;
-    setChgSuccess("✓ Password changed successfully!");
-    setOldPw(""); setNewPw1(""); setNewPw2("");
-    setTimeout(() => { setChanging(false); setChgSuccess(""); }, 1800);
-  };
-
-  const FocusInput = ({ label, value, onChange, placeholder }) => {
-    const t = useT();
-    const [foc, setFoc] = useState(false);
-    return (
-      <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
-        <label style={{ fontSize:11,fontWeight:700,color:t.textMut,textTransform:"uppercase",letterSpacing:"0.08em" }}>{label}</label>
-        <input
-          type="password" value={value} onChange={onChange} placeholder={placeholder||""}
-          onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)}
-          style={{ background:foc?t.surfaceEl:t.glass, border:`1px solid ${foc?t.accent:t.border}`, borderRadius:10, padding:"10px 12px", fontSize:13, color:t.text, outline:"none", width:"100%", boxSizing:"border-box", boxShadow:foc?`0 0 0 3px ${t.accentSoft}`:"none", transition:"all 0.15s" }}
-        />
-      </div>
-    );
-  };
-
-  return (
-    <div style={{ minHeight:"100vh", background:t.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:16, fontFamily:"'Inter',system-ui,sans-serif" }}>
-      {/* glow */}
-      <div style={{ position:"fixed",top:-100,left:"50%",transform:"translateX(-50%)",width:600,height:400,borderRadius:"50%",background:`radial-gradient(ellipse,${t.accentGl} 0%,transparent 70%)`,pointerEvents:"none" }} />
-
-      <div style={{ width:"100%", maxWidth:420, position:"relative" }}>
-        {/* top-right: theme toggle */}
-        <button onClick={toggle} style={{ position:"absolute",top:-48,right:0,background:t.surface,border:`1px solid ${t.border}`,borderRadius:99,padding:"6px 12px",cursor:"pointer",color:t.textSub,fontSize:12,display:"flex",alignItems:"center",gap:6 }}>
-          <Ic d={dark?I.sun:I.moon} size={13}/> {dark?"Light":"Dark"}
-        </button>
-
-        {/* logo + title */}
-        <div style={{ textAlign:"center", marginBottom:28 }}>
-          <div style={{ width:60,height:60,borderRadius:20,background:`linear-gradient(135deg,${t.accent},#a78bfa)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:750,color:"#fff",margin:"0 auto 14px",boxShadow:`0 8px 24px ${t.accent}50` }}>A</div>
-          <h1 style={{ fontSize:22,fontWeight:750,color:t.text,letterSpacing:"-0.03em",margin:"0 0 4px" }}>Portfolio CMS</h1>
-          <p style={{ fontSize:13,color:t.textMut,margin:"0 0 2px",fontFamily:"'Cairo',sans-serif" }}>لوحة تحكم ثنائية اللغة</p>
-          <p style={{ fontSize:11,color:t.textMut,opacity:0.65 }}>Bilingual AR/EN Admin Dashboard</p>
-        </div>
-
-        {/* card */}
-        <div style={{ background:t.surface,border:`1px solid ${t.border}`,borderRadius:20,padding:28,boxShadow:t.shadowLg }}>
-
-          {/* ── TAB BAR ── */}
-          <div style={{ display:"flex",gap:4,marginBottom:22,background:t.surfaceEl,borderRadius:11,padding:3 }}>
-            {[["login","Sign In"]].map(([id,lbl])=>(
-              <button key={id} onClick={()=>{setChanging(id==="change");setError("");setChgError("");setChgSuccess("");}}
-                style={{ flex:1,padding:"7px 0",borderRadius:9,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,transition:"all 0.15s",
-                  background: (id==="change")===changing ? t.accent : "transparent",
-                  color:       (id==="change")===changing ? "#fff"   : t.textMut,
-                  boxShadow:   (id==="change")===changing ? `0 2px 8px ${t.accent}40` : "none",
-                }}>
-                {lbl}
-              </button>
-            ))}
-          </div>
-
-          {/* ── SIGN IN FORM ── */}
-          {!changing && (
-            <form onSubmit={handleLogin} style={{ display:"flex",flexDirection:"column",gap:16 }}>
-              <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
-                <label style={{ fontSize:11,fontWeight:700,color:t.textMut,textTransform:"uppercase",letterSpacing:"0.08em" }}>Password</label>
-                <div style={{ position:"relative" }}>
-                  <Input
-                    type={showPw?"text":"password"}
-                    placeholder="Enter your password"
-                    value={pw}
-                    onChange={e=>{setPw(e.target.value);setError("");}}
-                    autoFocus
-                  />
-                  <button type="button" onClick={()=>setShowPw(s=>!s)}
-                    style={{ position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:t.textMut,display:"flex",alignItems:"center",padding:4 }}>
-                    <Ic d={showPw?["M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94","M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19","M1 1l22 22","M14.12 14.12a3 3 0 11-4.24-4.24"]:I.eye} size={15}/>
-                  </button>
-                </div>
-              </div>
-              {error && (
-                <div style={{ display:"flex",alignItems:"center",gap:7,background:t.dangerSoft,border:`1px solid ${t.danger}30`,borderRadius:9,padding:"9px 12px",fontSize:12,color:t.danger,fontWeight:500 }}>
-                  <Ic d={I.warn} size={13}/> {error}
-                </div>
-              )}
-              <button type="submit" disabled={loading}
-                style={{ width:"100%",padding:"12px",borderRadius:12,background:`linear-gradient(135deg,${t.accent},#7c3aed)`,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:loading?"wait":"pointer",opacity:loading?0.75:1,boxShadow:`0 4px 16px ${t.accent}40`,transition:"all 0.2s",marginTop:2 }}>
-                {loading ? "Signing in…" : "Sign In →"}
-              </button>
-            </form>
-          )}
-
-          {/* ── CHANGE PASSWORD FORM ── */}
-          {changing && (
-            <form onSubmit={handleChange} style={{ display:"flex",flexDirection:"column",gap:14 }}>
-              <FocusInput label="Current Password"  value={oldPw}  onChange={e=>{setOldPw(e.target.value);setChgError("");}}  placeholder="Your current password" />
-              <FocusInput label="New Password"       value={newPw1} onChange={e=>{setNewPw1(e.target.value);setChgError("");}} placeholder="At least 6 characters" />
-              <FocusInput label="Confirm New Password" value={newPw2} onChange={e=>{setNewPw2(e.target.value);setChgError("");}} placeholder="Repeat new password" />
-              {chgError && (
-                <div style={{ display:"flex",alignItems:"center",gap:7,background:t.dangerSoft,border:`1px solid ${t.danger}30`,borderRadius:9,padding:"9px 12px",fontSize:12,color:t.danger,fontWeight:500 }}>
-                  <Ic d={I.warn} size={13}/> {chgError}
-                </div>
-              )}
-              {chgSuccess && (
-                <div style={{ display:"flex",alignItems:"center",gap:7,background:t.successSoft,border:`1px solid ${t.success}30`,borderRadius:9,padding:"9px 12px",fontSize:12,color:t.success,fontWeight:600 }}>
-                  <Ic d={I.check} size={13}/> {chgSuccess}
-                </div>
-              )}
-              <button type="submit"
-                style={{ width:"100%",padding:"12px",borderRadius:12,background:`linear-gradient(135deg,${t.accent},#7c3aed)`,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:"pointer",boxShadow:`0 4px 16px ${t.accent}40`,transition:"all 0.2s",marginTop:2 }}>
-                Update Password
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0} body{margin:0}`}</style>
-    </div>
-  );
-}
-
 // ─── CMS PERSISTENCE / API SYNC ─────────────────────────────
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+// All network access lives in api.js — this file only shapes data
+// and hands it off to the api.js functions.
 const STORAGE_KEY = "ahmed_portfolio_cms_data";
 
 function mergeSiteText(incomingSiteText = {}) {
@@ -2176,96 +1925,42 @@ function normalizeCmsData(incoming) {
   };
 }
 
-function readFileAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => resolve(e.target.result);
-    reader.onerror = () => reject(new Error("Could not read media file"));
-    reader.readAsDataURL(file);
-  });
+// Turn a data: URL (e.g. a pasted base64 image/video) back into a File so it
+// can go through the same authenticated /api/upload/* endpoints as any other
+// upload — the backend no longer accepts raw base64 payloads.
+function dataUrlToFile(dataUrl) {
+  const [header, base64] = dataUrl.split(",");
+  const mime = (header.match(/data:(.*?);base64/) || [])[1] || "application/octet-stream";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const ext = mime.split("/")[1] || "bin";
+  return new File([bytes], `pasted-${Date.now()}.${ext}`, { type: mime });
 }
 
-async function uploadMediaDataUrl(dataUrl) {
-  const res = await fetch(`${API_URL}/api/upload-media`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ media: dataUrl, folder: "portfolio-cms" }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Cloudinary upload failed: ${res.status} ${text}`);
-  }
-
-  const json = await res.json();
-  if (!json.url) throw new Error("Cloudinary did not return a media URL");
-  return json.url;
-}
-
-async function uploadImageDataUrl(dataUrl) {
-  return uploadMediaDataUrl(dataUrl);
-}
-
+/* ── shared upload helpers used by the image/video uploader components ── */
 async function uploadImageFile(file) {
-  return uploadMediaFile(file);
+  if (!file) throw new Error("No image file selected");
+  const { url } = await uploadImage(file);
+  if (!url) throw new Error("Upload did not return an image URL");
+  return url;
 }
 
 async function uploadMediaFile(file) {
   if (!file) throw new Error("No media file selected");
-
-  // Videos and large files must not be converted to base64 because that easily
-  // exceeds browser / server JSON payload limits. Instead, ask the backend for
-  // a signed Cloudinary upload signature, then upload the binary file directly
-  // from the browser to Cloudinary.
-  const shouldUploadDirect = file.type.startsWith("video/") || file.size > 8 * 1024 * 1024;
-  if (!shouldUploadDirect) {
-    const dataUrl = await readFileAsDataUrl(file);
-    return uploadMediaDataUrl(dataUrl);
-  }
-
-  const signatureRes = await fetch(`${API_URL}/api/cloudinary-signature`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ folder: "portfolio-cms" }),
-  });
-
-  if (!signatureRes.ok) {
-    const text = await signatureRes.text().catch(() => "");
-    throw new Error(`Could not prepare large media upload: ${signatureRes.status} ${text}`);
-  }
-
-  const { cloudName, apiKey, folder, timestamp, signature } = await signatureRes.json();
-  if (!cloudName || !apiKey || !timestamp || !signature) {
-    throw new Error("Invalid Cloudinary signature response");
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("api_key", apiKey);
-  formData.append("timestamp", timestamp);
-  formData.append("signature", signature);
-  formData.append("folder", folder || "portfolio-cms");
-
-  const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!uploadRes.ok) {
-    const text = await uploadRes.text().catch(() => "");
-    throw new Error(`Cloudinary direct upload failed: ${uploadRes.status} ${text}`);
-  }
-
-  const json = await uploadRes.json();
-  if (!json.secure_url) throw new Error("Cloudinary did not return a media URL");
-  return json.secure_url;
+  const { url } = await uploadMedia(file);
+  if (!url) throw new Error("Upload did not return a media URL");
+  return url;
 }
 
 async function replaceEmbeddedImages(value, cache = new Map()) {
   if (typeof value === "string") {
     if (!value.startsWith("data:image/") && !value.startsWith("data:video/")) return value;
     if (cache.has(value)) return cache.get(value);
-    const uploadedUrl = await uploadMediaDataUrl(value);
+    const file = dataUrlToFile(value);
+    const uploadedUrl = value.startsWith("data:video/")
+      ? await uploadMediaFile(file)
+      : await uploadImageFile(file);
     cache.set(value, uploadedUrl);
     return uploadedUrl;
   }
@@ -2287,27 +1982,15 @@ async function replaceEmbeddedImages(value, cache = new Map()) {
 
 async function publishCmsData(data) {
   const normalized = await replaceEmbeddedImages(normalizeCmsData(data));
-  const payload = JSON.stringify(normalized);
 
   try {
-    localStorage.setItem(STORAGE_KEY, payload);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
   } catch (err) {
     console.warn("Local storage save skipped:", err.message);
   }
 
-  const res = await fetch(`${API_URL}/api/content`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: payload,
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Publish failed: ${res.status} ${text}`);
-  }
-
-  const updated = await res.json().catch(() => normalized);
-  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: updated }));
+  const updated = await saveContent(normalized);
+  window.dispatchEvent(new CustomEvent("portfolio-cms-updated", { detail: updated || normalized }));
   return true;
 }
 // ─── NAV CONFIG ──────────────────────────────────────────────
@@ -2347,8 +2030,7 @@ function Dashboard({ onLogout }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_URL}/api/content`)
-      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+    getContent()
       .then(remote => {
         if (!cancelled && remote && typeof remote === "object") {
           setData(normalizeCmsData(remote));
@@ -2490,17 +2172,18 @@ function Dashboard({ onLogout }) {
 }
 
 // ─── ROOT ────────────────────────────────────────────────────
-function ThemeProvider({ children }) {
-  const [dark, setDark] = useState(true);
-  return <ThemeCtx.Provider value={{ dark, toggle:()=>setDark(d=>!d) }}>{children}</ThemeCtx.Provider>;
-}
-
 export default function AdminApp() {
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState(() => hasToken());
+
+  const handleLogout = () => {
+    removeToken();
+    setAuthed(false);
+  };
+
   return (
     <ThemeProvider>
       <ToastProvider>
-        {authed ? <Dashboard onLogout={()=>setAuthed(false)} /> : <LoginPage onLogin={()=>setAuthed(true)} />}
+        {authed ? <Dashboard onLogout={handleLogout} /> : <Login onLogin={()=>setAuthed(true)} />}
       </ToastProvider>
     </ThemeProvider>
   );
@@ -2553,6 +2236,6 @@ export default function AdminApp() {
 2. cd admin && npm install  
 3. Replace src/App.jsx with this file
 4. import AdminApp from './App' in main.jsx → <AdminApp />
-5. Set your own password in the Change Password tab on the login screen
+5. Sign in with the email/password of a user created on the backend
 ════════════════════════════════════════════════════════════════
 */

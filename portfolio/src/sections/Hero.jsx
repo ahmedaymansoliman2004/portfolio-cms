@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Github, Linkedin, Mail, ExternalLink } from 'lucide-react';
 import profileImg from '../assets/profile.jpg';
 import { useLang } from '../context/LangContext';
-import { useCms, siteText } from '../context/CmsContext';
+import { useCms, siteText, cmsProjects } from '../context/CmsContext';
 
 const skillsLabel = { ar: 'المهارات', en: 'SKILLS' };
 const SKILLS = ['Python', 'TensorFlow', 'YOLOv8', 'SQL', 'Power BI', 'Scikit-learn', 'OpenCV', 'Flask'];
@@ -13,6 +13,7 @@ export default function Hero() {
   const heroSubtitle = siteText(cmsData, 'hero', 'subtitle', lang, t.hero.role);
   const heroDescription = siteText(cmsData, 'hero', 'description', lang, t.hero.description);
   const heroImage = cmsData?.about?.profileImage || profileImg;
+  const projectsCount = cmsProjects(cmsData, []).length;
 
   const nameDisplay = lang === 'ar'
     ? { line1: 'أحمد', line2: 'أيمن', line3: 'سليمان' }
@@ -193,7 +194,7 @@ export default function Hero() {
               className="absolute -bottom-5 card-glass px-4 py-3 rounded-xl shadow-xl z-10"
               style={{ insetInlineEnd: '-1.5rem' }}
             >
-              <p className="font-display font-bold text-lg text-accent leading-none">3.63</p>
+              <p className="font-display font-bold text-lg text-accent leading-none">{cmsData?.about?.stats?.gpa || "3.63"}</p>
               <p className="text-xs text-gray-500 dark:text-gray-500 font-mono mt-0.5">{t.hero.gpa} / 4.0</p>
             </motion.div>
 
@@ -203,7 +204,7 @@ export default function Hero() {
               className="absolute -top-5 card-glass px-4 py-3 rounded-xl shadow-xl z-10"
               style={{ insetInlineStart: '-1.5rem' }}
             >
-              <p className="font-display font-bold text-lg text-accent leading-none">9+</p>
+              <p className="font-display font-bold text-lg text-accent leading-none">{projectsCount > 0 ? `${projectsCount}+` : "0"}</p>
               <p className="text-xs text-gray-500 dark:text-gray-500 font-mono mt-0.5">{t.hero.projects}</p>
             </motion.div>
           </motion.div>

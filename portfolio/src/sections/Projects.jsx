@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Github } from 'lucide-react';
 import { projects as fallbackProjects } from '../data/projects';
-import { useCms, cmsProjects, siteText } from '../context/CmsContext';
+import { useCms, siteText, cmsSkills, cmsProjects } from '../context/CmsContext';
 import ProjectCard from '../components/ProjectCard';
 import ProjectModal from '../components/ProjectModal';
 import { useLang } from '../context/LangContext';
@@ -19,6 +19,7 @@ const CATEGORIES = [
 export default function Projects() {
   const { t, lang } = useLang();
   const { data: cmsData } = useCms();
+  const projectsCount = cmsProjects(cmsData, []).length;
   const projects = cmsProjects(cmsData, fallbackProjects);
   const [selectedProject, setSelectedProject] = useState(null);
   const [filterKey, setFilterKey] = useState(ALL_KEY);

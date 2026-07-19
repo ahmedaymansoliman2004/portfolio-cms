@@ -2,23 +2,24 @@ import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap } from 'lucide-react';
 import { useLang } from '../context/LangContext';
 import { useCms, cmsExperience, siteText } from '../context/CmsContext';
+import { formatPeriod } from '../utils/experienceUtils';
 
 const experienceData = {
   ar: [
-    { role: 'متدرب تقنية المعلومات (مهندس ذكاء اصطناعي)', company: 'Encryptcore', period: 'أغسطس 2026 – سبتمبر 2026', type: 'work', bullets: ['طور نظام اكتشاف قواعد اللباس بالذكاء الاصطناعي باستخدام YOLOv8', 'عمل مع 2700+ صورة مُصنَّفة واستدلال OpenCV في الوقت الفعلي'], color: '#8B5CF6' },
-    { role: 'متدرب تعلم الآلة', company: 'Elevvo Pathways', period: 'فبراير 2026 – مارس 2026', type: 'work', bullets: ['أتم مهام تعلم الآلة في المعالجة المسبقة والنمذجة والتقييم', 'طبّق تقنيات التعلم المُشرف على مجموعات بيانات حقيقية'], color: '#00E5FF' },
-    { role: 'متدرب هندسة البيانات', company: 'مبادرة مصر الرقمية (DEPI)', period: 'نوفمبر 2025 – الآن', type: 'work', bullets: ['بناء خطوط أنابيب ETL باستخدام Python وSQL وأساسيات Azure', 'العمل على سير بيانات وأتمتة ومفاهيم Big Data', 'قيادة فريق من 6 أعضاء في مشروع ETL'], color: '#22C55E' },
-    { role: 'مهندس تعلم آلة حر', company: 'مستقل وخمسات', period: 'مايو 2024 – الآن', type: 'work', bullets: ['بنى نماذج ML للانحدار والتصنيف', 'أجرى معالجة بيانات وهندسة ميزات ونشر نماذج'], color: '#F59E0B' },
-    { role: 'متدرب تحليل البيانات', company: 'مبادرة مصر الرقمية (DEPI)', period: 'نوفمبر 2024 – مايو 2025', type: 'work', bullets: ['حلّل 31 ألف+ سجل سكك حديدية بريطانية بـPython وSQL', 'بنى لوحات Power BI لمؤشرات الأداء والتوجهات', 'قاد فريقًا تحليليًا من 4 أعضاء'], color: '#EC4899' },
-    { role: 'طالب نظم معلومات إدارية', company: 'جامعة MSA', period: '2023 – يونيو 2027', type: 'edu', bullets: ['كلية علوم الإدارة – نظم المعلومات الإدارية', 'المعدل: 3.63 / 4.00 (مصري) · 3.73 / 4.00 (بريطاني)'], color: '#06B6D4' },
+    { role: 'متدرب تقنية المعلومات (مهندس ذكاء اصطناعي)', company: 'Encryptcore', category: 'internship', startDate: '2026-08-01', endDate: '2026-09-30', present: false, bullets: ['طور نظام اكتشاف قواعد اللباس بالذكاء الاصطناعي باستخدام YOLOv8', 'عمل مع 2700+ صورة مُصنَّفة واستدلال OpenCV في الوقت الفعلي'], color: '#8B5CF6' },
+    { role: 'متدرب تعلم الآلة', company: 'Elevvo Pathways', category: 'internship', startDate: '2026-02-01', endDate: '2026-03-31', present: false, bullets: ['أتم مهام تعلم الآلة في المعالجة المسبقة والنمذجة والتقييم', 'طبّق تقنيات التعلم المُشرف على مجموعات بيانات حقيقية'], color: '#00E5FF' },
+    { role: 'متدرب هندسة البيانات', company: 'مبادرة مصر الرقمية (DEPI)', category: 'program', startDate: '2025-11-01', endDate: null, present: true, bullets: ['بناء خطوط أنابيب ETL باستخدام Python وSQL وأساسيات Azure', 'العمل على سير بيانات وأتمتة ومفاهيم Big Data', 'قيادة فريق من 6 أعضاء في مشروع ETL'], color: '#22C55E' },
+    { role: 'مهندس تعلم آلة حر', company: 'مستقل وخمسات', category: 'freelance', startDate: '2024-05-01', endDate: null, present: true, bullets: ['بنى نماذج ML للانحدار والتصنيف', 'أجرى معالجة بيانات وهندسة ميزات ونشر نماذج'], color: '#F59E0B' },
+    { role: 'متدرب تحليل البيانات', company: 'مبادرة مصر الرقمية (DEPI)', category: 'program', startDate: '2024-11-01', endDate: '2025-05-31', present: false, bullets: ['حلّل 31 ألف+ سجل سكك حديدية بريطانية بـPython وSQL', 'بنى لوحات Power BI لمؤشرات الأداء والتوجهات', 'قاد فريقًا تحليليًا من 4 أعضاء'], color: '#EC4899' },
+    { role: 'طالب نظم معلومات إدارية', company: 'جامعة MSA', category: 'education', startDate: '2023-10-01', endDate: '2027-06-30', present: false, bullets: ['كلية علوم الإدارة – نظم المعلومات الإدارية', 'المعدل: 3.63 / 4.00 (مصري) · 3.73 / 4.00 (بريطاني)'], color: '#06B6D4' },
   ],
   en: [
-    { role: 'IT Intern (AI Engineer)', company: 'Encryptcore', period: 'Aug 2026 – Sep 2026', type: 'work', bullets: ['Developed AI-based dress code detection system using YOLOv8', 'Worked with 2,700+ labeled images and real-time OpenCV inference'], color: '#8B5CF6' },
-    { role: 'Machine Learning Intern', company: 'Elevvo Pathways', period: 'Feb 2026 – Mar 2026', type: 'work', bullets: ['Completed ML tasks covering preprocessing, modeling, and evaluation', 'Applied supervised learning techniques on real datasets'], color: '#00E5FF' },
-    { role: 'Data Engineering Trainee', company: 'Digital Egypt Pioneers Initiative (DEPI)', period: 'Nov 2025 – Present', type: 'work', bullets: ['Building ETL pipelines using Python, SQL, and Azure basics', 'Working on data workflows, automation, and Big Data concepts', 'Leading a 6-member team in ETL pipeline project'], color: '#22C55E' },
-    { role: 'Freelance ML Engineer', company: 'Mostaql & Khamsat', period: 'May 2024 – Present', type: 'work', bullets: ['Built ML models for regression and classification problems', 'Performed data preprocessing, feature engineering, and deployment'], color: '#F59E0B' },
-    { role: 'Data Analysis Trainee', company: 'Digital Egypt Pioneers Initiative (DEPI)', period: 'Nov 2024 – May 2025', type: 'work', bullets: ['Analyzed 31K+ UK railway records using Python and SQL', 'Built Power BI dashboards for KPIs and trends', 'Led a 4-member analytics team'], color: '#EC4899' },
-    { role: 'MIS Student', company: 'MSA University', period: '2023 – Jun 2027', type: 'edu', bullets: ['Faculty of Management Sciences – Management Information Systems', 'GPA: 3.63 / 4.00 (Egyptian) · 3.73 / 4.00 (British)'], color: '#06B6D4' },
+    { role: 'IT Intern (AI Engineer)', company: 'Encryptcore', category: 'internship', startDate: '2026-08-01', endDate: '2026-09-30', present: false, bullets: ['Developed AI-based dress code detection system using YOLOv8', 'Worked with 2,700+ labeled images and real-time OpenCV inference'], color: '#8B5CF6' },
+    { role: 'Machine Learning Intern', company: 'Elevvo Pathways', category: 'internship', startDate: '2026-02-01', endDate: '2026-03-31', present: false, bullets: ['Completed ML tasks covering preprocessing, modeling, and evaluation', 'Applied supervised learning techniques on real datasets'], color: '#00E5FF' },
+    { role: 'Data Engineering Trainee', company: 'Digital Egypt Pioneers Initiative (DEPI)', category: 'program', startDate: '2025-11-01', endDate: null, present: true, bullets: ['Building ETL pipelines using Python, SQL, and Azure basics', 'Working on data workflows, automation, and Big Data concepts', 'Leading a 6-member team in ETL pipeline project'], color: '#22C55E' },
+    { role: 'Freelance ML Engineer', company: 'Mostaql & Khamsat', category: 'freelance', startDate: '2024-05-01', endDate: null, present: true, bullets: ['Built ML models for regression and classification problems', 'Performed data preprocessing, feature engineering, and deployment'], color: '#F59E0B' },
+    { role: 'Data Analysis Trainee', company: 'Digital Egypt Pioneers Initiative (DEPI)', category: 'program', startDate: '2024-11-01', endDate: '2025-05-31', present: false, bullets: ['Analyzed 31K+ UK railway records using Python and SQL', 'Built Power BI dashboards for KPIs and trends', 'Led a 4-member analytics team'], color: '#EC4899' },
+    { role: 'MIS Student', company: 'MSA University', category: 'education', startDate: '2023-10-01', endDate: '2027-06-30', present: false, bullets: ['Faculty of Management Sciences – Management Information Systems', 'GPA: 3.63 / 4.00 (Egyptian) · 3.73 / 4.00 (British)'], color: '#06B6D4' },
   ],
 };
 
@@ -73,7 +74,7 @@ export default function Experience() {
                         className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ background: item.color + '15', border: `1px solid ${item.color}30` }}
                       >
-                        {item.type === 'edu'
+                        {item.category === 'education'
                           ? <GraduationCap size={14} style={{ color: item.color }} />
                           : <Briefcase size={14} style={{ color: item.color }} />
                         }
@@ -81,7 +82,7 @@ export default function Experience() {
                       <div className="flex-1">
                         <h3 className="font-display font-semibold text-sm text-gray-900 dark:text-white leading-snug">{item.role}</h3>
                         <p className="text-xs font-medium mt-0.5" style={{ color: item.color }}>{item.company}</p>
-                        <p className="font-mono text-xs text-gray-400 dark:text-gray-600 mt-0.5">{item.period}</p>
+                        <p className="font-mono text-xs text-gray-400 dark:text-gray-600 mt-0.5">{formatPeriod(item, lang)}</p>
                       </div>
                     </div>
                     <ul className="space-y-1">
