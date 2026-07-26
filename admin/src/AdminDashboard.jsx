@@ -1072,18 +1072,27 @@ const blankSkill = () => ({ id:nid(), category_en:"", category_ar:"", icon:"⭐"
 function SkillsSection({ data, setData }) {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState(blankSkill());
+  const [skillsText, setSkillsText] = useState("");
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
   const groups = normalizeSkillGroupsForAdmin(data.skills);
-  const open = (item=null) => { setForm(item?{...item, skills:[...(item.skills || [])]}:blankSkill()); setModal(item?"edit":"add"); };
+  const open = (item = null) => {
+    const data = item
+      ? { ...item, skills: [...(item.skills || [])] }
+      : blankSkill();
+  
+    setForm(data);
+    setSkillsText((data.skills || []).join(", "));
+    setModal(item ? "edit" : "add");
+  };
   const close = () => setModal(null);
   const save = () => {
     const normalizedForm = {
       ...form,
       category_en: String(form.category_en || "").trim(),
       category_ar: String(form.category_ar || form.category_en || "").trim(),
-      skills: Array.isArray(form.skills) ? form.skills.map(String).map(s => s.trim()).filter(Boolean) : splitSkillsText(form.skills),
+      skills: splitSkillsText(skillsText),
     };
     setData(d=>{
       const current = normalizeSkillGroupsForAdmin(d.skills);
@@ -1126,8 +1135,8 @@ function SkillsSection({ data, setData }) {
               label="Skills"
               hint="write skills separated by commas or one skill per line"
               rows={7}
-              value={(form.skills || []).join(", ")}
-              onChange={e=>setForm(f=>({...f,skills:splitSkillsText(e.target.value)}))}
+              value={skillsText}
+              onChange={e => setSkillsText(e.target.value)}
             />
             <Field label="Accent Color">
               <input type="color" value={form.color || "#818cf8"} onChange={e=>setForm(f=>({...f,color:e.target.value}))} style={{ width:44,height:44,borderRadius:10,border:`1px solid ${t.border}`,cursor:"pointer",background:"none",padding:2 }} />
@@ -1152,7 +1161,10 @@ function ProjectsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankProject()); setModal(item?"edit":"add"); };
+  const open = (item = null) => {
+    setForm(item ? { ...item } : blankProject());
+    setModal(item ? "edit" : "add");
+  };
   const close = () => setModal(null);
 
   const skillCategoryFromProject = (projectCategory) => {
@@ -1451,7 +1463,15 @@ function ReviewsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankReview()); setModal(item?"edit":"add"); };
+  const open = (item = null) => {
+    const data = item
+      ? { ...item, skills: [...(item.skills || [])] }
+      : blankSkill();
+  
+    setForm(data);
+    setSkillsText((data.skills || []).join(", "));
+    setModal(item ? "edit" : "add");
+  };
   const close = () => setModal(null);
   const save = () => { setData(d=>({...d,reviews:modal==="add"?[...d.reviews,form]:d.reviews.map(r=>r.id===form.id?form:r)})); toast(modal==="add"?"Review added!":"Updated!","success"); close(); };
   const del = id => setData(d=>({...d,reviews:d.reviews.filter(r=>r.id!==id)}));
@@ -1514,7 +1534,15 @@ function RecsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item?{...item}:blankRec()); setModal(item?"edit":"add"); };
+  const open = (item = null) => {
+    const data = item
+      ? { ...item, skills: [...(item.skills || [])] }
+      : blankSkill();
+  
+    setForm(data);
+    setSkillsText((data.skills || []).join(", "));
+    setModal(item ? "edit" : "add");
+  };
   const close = () => setModal(null);
   const save = () => { setData(d=>({...d,recommendations:modal==="add"?[...d.recommendations,form]:d.recommendations.map(r=>r.id===form.id?form:r)})); toast("Saved!","success"); close(); };
   const del = id => setData(d=>({...d,recommendations:d.recommendations.filter(r=>r.id!==id)}));
@@ -1585,7 +1613,10 @@ function CertsSection({ data, setData }) {
   const [lang, setLang] = useState("en");
   const { toast } = useToast();
   const t = useT();
-  const open = (item=null) => { setForm(item ? { ...blankCert(), ...item } : blankCert()); setModal(item ? "edit" : "add"); };
+  const open = (item = null) => {
+    setForm(item ? { ...item } : blankCert());
+    setModal(item ? "edit" : "add");
+  };
   const close = () => setModal(null);
   const save = () => { setData(d=>({...d,certificates:modal==="add"?[...d.certificates,form]:d.certificates.map(c=>c.id===form.id?form:c)})); toast(modal==="add"?"Certificate added!":"Updated!","success"); close(); };
   const del = id => setData(d=>({...d,certificates:d.certificates.filter(c=>c.id!==id)}));

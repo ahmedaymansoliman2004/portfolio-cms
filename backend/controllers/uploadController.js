@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -49,6 +50,47 @@ async function uploadToCloudinary(dataUrl, folder = "portfolio-cms") {
   }
 
   return cloudinary.uploader.upload(dataUrl, options);
+}
+
+async function uploadFileToCloudinary(file, folder = "portfolio-cms") {
+  if (!file || !file.buffer) {
+    const err = new Error("Media file is required.");
+    err.status = 400;
+    throw err;
+  }
+
+  const options = {
+    folder,
+    resource_type: "auto",
+  };
+
+  if (file.mimetype.startsWith("image/")) {
+    options.transformation = [
+      {
+        width: 1400,
+        height: 1400,
+        crop: "limit",
+      },
+      {
+        quality: "auto:good",
+      },
+      {
+        fetch_format: "auto",
+      },
+    ];
+  }
+
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    streamifier.createReadStream(file.buffer).pipe(uploadStream);
+  });
 }
 
 export async function cloudinarySignature(req, res) {
@@ -117,13 +159,17 @@ export async function uploadMedia(req, res) {
 
 export async function uploadImage(req, res) {
   try {
-    const {
-      image,
-      folder = "portfolio-cms",
-    } = req.body || {};
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No image uploaded.",
+      });
+    }
 
-    const result = await uploadToCloudinary(
-      image,
+    const folder =
+      req.body.folder || "portfolio-cms";
+
+    const result = await uploadFileToCloudinary(
+      req.file,
       folder
     );
 

@@ -1,5 +1,7 @@
 import express from "express";
 import auth from "../middleware/auth.js";
+import upload from "../middleware/upload.middleware.js";
+
 import {
   uploadMedia,
   uploadImage,
@@ -12,6 +14,11 @@ router.post("/signature", auth, cloudinarySignature);
 
 router.post("/media", auth, uploadMedia);
 
-router.post("/image", auth, uploadImage);
+router.post(
+  "/image",
+  auth,
+  upload.single("file"),
+  uploadImage
+);
 
 export default router;

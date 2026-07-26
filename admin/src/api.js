@@ -100,6 +100,8 @@ export async function getUploadSignature(folder = "portfolio") {
 
 // ===== IMAGE =====
 export async function uploadImage(file) {
+  console.log("API_URL =", API_URL);
+
   const formData = new FormData();
   formData.append("file", file);
 
